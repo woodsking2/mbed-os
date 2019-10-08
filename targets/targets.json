@@ -7289,7 +7289,6 @@
     "MCU_NRF52832": {
         "inherits": ["Target"],
         "core": "Cortex-M4F",
-        "static_memory_defines": false,
         "macros": [
             "BOARD_PCA10040",
             "NRF52",
@@ -7590,8 +7589,7 @@
     "MCU_NRF52840": {
         "inherits": ["Target"],
         "components_add": ["QSPIF"],
-        "core": "Cortex-M4F",
-        "static_memory_defines": false,
+        "core": "Cortex-M4F",        
         "macros": [
             "BOARD_PCA10056",
             "NRF52840_XXAA",

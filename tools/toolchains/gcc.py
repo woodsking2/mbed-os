@@ -99,6 +99,9 @@ class GCC(mbedToolchain):
         if core == "Cortex-M4F":
             self.cpu.append("-mfpu=fpv4-sp-d16")
             self.cpu.append("-mfloat-abi=softfp")
+        elif core == "Cortex-M33":
+            self.cpu.append("-mfpu=fpv5-sp-d16")
+            self.cpu.append("-mfloat-abi=hard")
         elif core == "Cortex-M7F" or core.startswith("Cortex-M33F"):
             self.cpu.append("-mfpu=fpv5-sp-d16")
             self.cpu.append("-mfloat-abi=softfp")

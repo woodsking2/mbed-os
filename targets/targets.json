@@ -9659,6 +9659,42 @@
         },
         "forced_reset_timeout": 3
     },    
+    "DA1469x": {
+        "inherits": [
+            "Target"
+        ],
+        "core": "Cortex-M33",
+        "OUTPUT_EXT": "bin",
+        "device_name": "DA1469x",
+        "supported_toolchains": [
+            "GCC_ARM"
+        ],
+        "macros_add": [
+            "MBED_MPU_CUSTOM"
+        ],
+        "device_has": [
+            "MPU",
+            "SERIAL",
+            "STDIO_MESSAGES",
+            "LPTICKER",
+            "SPI",
+            "FLASH"
+        ],
+        "features": [
+            "BLE",
+            "STORAGE"
+        ],
+        "extra_labels": [
+            "Dialog",
+            "DA1469x",
+            "SDK10",
+            "CORDIO"
+        ],
+        "components_add": [
+            "FLASHIAP"
+        ],
+        "config": {}
+    },
     "__build_tools_metadata__": {
         "version": "1",
         "public": false

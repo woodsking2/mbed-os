@@ -53,7 +53,7 @@ void InterruptIn::irq_init(PinName pin)
 InterruptIn::~InterruptIn()
 {
     // No lock needed in the destructor
-    gpio_irq_free(&gpio_irq);
+    gpio_irq_free(&gpio_irq);    
 }
 
 int InterruptIn::read()

@@ -9659,6 +9659,80 @@
         },
         "forced_reset_timeout": 3
     },    
+    "DA1469x": {
+        "inherits": [
+            "Target"
+        ],
+        "core": "Cortex-M33",
+        "OUTPUT_EXT": "bin",
+        "device_name": "DA1469x",
+        "supported_toolchains": [
+            "GCC_ARM"
+        ],
+        "components_add": ["FLASHIAP"],
+        "macros_add": [
+            "dg_configEXEC_MODE=MODE_IS_CACHED",
+            "dg_configUSE_LP_CLK=LP_CLK_32768",
+            "dg_configCODE_LOCATION=NON_VOLATILE_IS_FLASH",                                    
+            "dg_configFLASH_CONNECTED_TO=FLASH_CONNECTED_TO_1V8",
+            "dg_configFLASH_POWER_DOWN=0",
+            "dg_configPOWER_1V8_ACTIVE=1",
+            "dg_configPOWER_1V8_SLEEP=1",                                      
+            "dg_configUSE_SW_CURSOR=0",                        
+            "dg_configDEVICE=DEVICE_DA1469x",
+            "dg_configBLACK_ORCA_IC_REV=BLACK_ORCA_IC_REV_A",
+            "dg_configBLACK_ORCA_IC_STEP=BLACK_ORCA_IC_STEP_B",
+            "dg_configUSE_Board=\"wf01_board.h\"",
+            "dg_configQSPI_CODE_SIZE_AA=1024*1024",
+            "dg_configQSPI_CACHED_RAM_SIZE_AA=512*1024",
+            "dg_configUSE_SEGGER_FLASH_LOADER=0",
+            "dg_config_RETAINED_UNINIT_SECTION_SIZE=128",
+            "dg_configFLASH_AUTODETECT=1",
+            "dg_configUSE_HW_CHARGER=1",
+            "dg_configUSE_HW_CPM=1",
+            "MBED_MPU_CUSTOM",
+            "MBED_TICKLESS",
+            "CONFIG_USE_BLE",            
+            "BLACKGROUND",
+            "dg_configUSE_HW_SPI=1",
+            "dg_configUSE_HW_I2C=1",
+            "dg_configUSE_HW_LCDC=1",
+            "NVIC_RAM_VECTOR_ADDRESS=0x20000000",
+            "NVIC_NUM_VECTORS=0x200/4",
+            "dg_configIMAGE_SETUP=DEVELOPMENT_MODE",
+            "dg_configFLASH_MAX_WRITE_SIZE=256",
+            "LV_CONF_INCLUDE_SIMPLE"
+        ],
+        "device_has": [
+            "MPU",            
+            "SERIAL",
+            "STDIO_MESSAGES",
+            "LPTICKER",
+            "SPI",            
+            "SLEEP",
+            "INTERRUPTIN",
+            "RTC",
+            "TRNG",
+            "PWMOUT",
+            "I2C",
+            "FLASH"
+        ],
+        "features": [
+            "BLE",
+            "STORAGE"
+        ],
+        "extra_labels": [
+            "Dialog",
+            "DA1469x",
+            "SDK_10",
+            "startup",
+            "peripherals",
+            "ldscripts",
+            "CORDIO"            
+        ],
+
+        "config": {}
+    },
     "__build_tools_metadata__": {
         "version": "1",
         "public": false

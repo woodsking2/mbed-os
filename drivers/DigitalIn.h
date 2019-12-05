@@ -74,7 +74,7 @@ public:
         // No lock needed in the constructor
         gpio_init_in_ex(&gpio, pin, mode);
     }
-
+        
     /** Read the input, represented as 0 or 1 (int)
      *
      *  @returns

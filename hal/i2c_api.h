@@ -82,6 +82,8 @@ extern "C" {
  */
 void i2c_init(i2c_t *obj, PinName sda, PinName scl);
 
+void i2c_deinit(i2c_t *obj);
+
 /** Configure the I2C frequency
  *
  *  @param obj The I2C object

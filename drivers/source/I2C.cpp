@@ -46,7 +46,12 @@ I2C::I2C(PinName sda, PinName scl) :
     _owner = this;
     unlock();
 }
-
+I2C::~I2C()
+{
+    lock();
+    i2c_deinit(&_i2c);
+    unlock();
+}
 void I2C::frequency(int hz)
 {
     lock();

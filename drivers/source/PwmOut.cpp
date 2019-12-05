@@ -27,75 +27,75 @@ namespace mbed {
 
 PwmOut::PwmOut(PinName pin) : _deep_sleep_locked(false)
 {
-    core_util_critical_section_enter();
+    // core_util_critical_section_enter();
     pwmout_init(&_pwm, pin);
-    core_util_critical_section_exit();
+    // core_util_critical_section_exit();
 }
 
 PwmOut::~PwmOut()
 {
-    core_util_critical_section_enter();
+    // core_util_critical_section_enter();
     pwmout_free(&_pwm);
     unlock_deep_sleep();
-    core_util_critical_section_exit();
+    // core_util_critical_section_exit();
 }
 
 void PwmOut::write(float value)
 {
-    core_util_critical_section_enter();
+    // core_util_critical_section_enter();
     lock_deep_sleep();
     pwmout_write(&_pwm, value);
-    core_util_critical_section_exit();
+    // core_util_critical_section_exit();
 }
 
 float PwmOut::read()
 {
-    core_util_critical_section_enter();
+    // core_util_critical_section_enter();
     float val = pwmout_read(&_pwm);
-    core_util_critical_section_exit();
+    // core_util_critical_section_exit();
     return val;
 }
 
 void PwmOut::period(float seconds)
 {
-    core_util_critical_section_enter();
+    // core_util_critical_section_enter();
     pwmout_period(&_pwm, seconds);
-    core_util_critical_section_exit();
+    // core_util_critical_section_exit();
 }
 
 void PwmOut::period_ms(int ms)
 {
-    core_util_critical_section_enter();
+    // core_util_critical_section_enter();
     pwmout_period_ms(&_pwm, ms);
-    core_util_critical_section_exit();
+    // core_util_critical_section_exit();
 }
 
 void PwmOut::period_us(int us)
 {
-    core_util_critical_section_enter();
+    // core_util_critical_section_enter();
     pwmout_period_us(&_pwm, us);
-    core_util_critical_section_exit();
+    // core_util_critical_section_exit();
 }
 
 void PwmOut::pulsewidth(float seconds)
 {
-    core_util_critical_section_enter();
+    // core_util_critical_section_enter();
     pwmout_pulsewidth(&_pwm, seconds);
-    core_util_critical_section_exit();
+    // core_util_critical_section_exit();
 }
 
 void PwmOut::pulsewidth_ms(int ms)
 {
-    core_util_critical_section_enter();
+    // core_util_critical_section_enter();
     pwmout_pulsewidth_ms(&_pwm, ms);
-    core_util_critical_section_exit();
+    // core_util_critical_section_exit();
 }
 
 void PwmOut::pulsewidth_us(int us)
 {
-    core_util_critical_section_enter();
+    // core_util_critical_section_enter();
     pwmout_pulsewidth_us(&_pwm, us);
-    core_util_critical_section_exit();
+    // core_util_critical_section_exit();
 }
 
 void PwmOut::lock_deep_sleep()

@@ -99,6 +99,7 @@ SPI::~SPI()
     /* Make sure a stale pointer isn't left in peripheral's owner field */
     if (_peripheral->owner == this) {
         _peripheral->owner = NULL;
+        spi_free(&_peripheral->spi);
     }
     unlock();
 }

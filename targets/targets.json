@@ -9693,6 +9693,7 @@
         "components_add": [
             "FLASHIAP"
         ],
+        "bootloader_supported": true,
         "config": {}
     },
     "__build_tools_metadata__": {

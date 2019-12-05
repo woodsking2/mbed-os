@@ -181,7 +181,7 @@ int32_t flash_free(flash_t *obj)
  */
 int32_t flash_erase_sector(flash_t *obj, uint32_t address)
 {
-    debug("flash erase sector： %u\n", address);
+    debug("flash erase sector： %x\n", address);
     Expects(address >= flash_start_address);
     Expects(address < flash_start_address + flash_size);
     uint32_t flash_address{};

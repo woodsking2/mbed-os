@@ -1,7 +1,7 @@
 #pragma once
 #include "objects.h"
 #include "DA1469xAB.h"
-#include "DA1469x_serial.h"
+//#include "DA1469x_serial.h"
 #include "PeripheralNames.h"
 #ifdef __cplusplus
 extern "C"

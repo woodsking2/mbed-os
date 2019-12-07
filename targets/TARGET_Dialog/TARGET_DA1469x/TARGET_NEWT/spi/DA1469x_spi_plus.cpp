@@ -195,7 +195,7 @@ DA1469x::Spi_plus::~Spi_plus()
 
 uint8_t DA1469x::Spi_plus::write(uint8_t value)
 {
-    debug("write %0X\n", value);
+    // debug("write %0X\n", value);
     m_cs.write(false);
     auto _ = finally([this] { m_cs.write(true); });
     while (!(m_regs->SPI_CTRL_REG & SPI_SPI_CTRL_REG_SPI_TX_FIFO_EMPTY_Msk))

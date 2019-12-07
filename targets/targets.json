@@ -9664,36 +9664,60 @@
             "Target"
         ],
         "core": "Cortex-M33",
-        "OUTPUT_EXT": "bin",
+        "OUTPUT_EXT": "hex",
         "device_name": "DA1469x",
         "supported_toolchains": [
             "GCC_ARM"
         ],
         "macros_add": [
-            "MBED_MPU_CUSTOM"
+            "dg_configUSE_HW_AES_HASH =0",
+            "dg_configUSE_HW_COEX=0",
+            "dg_configUSE_HW_CPM=1",
+            "dg_configUSE_HW_SYS=1",
+            "dg_configUSE_HW_CLK=1",
+            "dg_configUSE_HW_PD=1",
+            "dg_configUSE_HW_PMU=1",
+            "dg_configUSE_HW_DMA=1",
+            "dg_configUSE_HW_ECC=1",
+            "dg_configUSE_HW_GPADC=1",
+            "dg_configUSE_HW_GPIO=1",
+            "dg_configUSE_HW_I2C=0",
+            "dg_configUSE_HW_IRGEN=0",
+            "dg_configUSE_HW_ISO7816=0",
+            "dg_configUSE_HW_KEYBOARD_SCANNER=0",
+            "dg_configUSE_HW_LCDC=0",
+            "dg_configUSE_HW_OTPC=1",
+            "dg_configUSE_HW_QSPI=1",
+            "dg_configUSE_HW_QSPI2=0",
+            "dg_configUSE_HW_QUAD=0",
+            "dg_configUSE_HW_RF=1",
+            "dg_configUSE_HW_SOC=0",
+            "dg_configUSE_HW_TIMER0=0",
+            "dg_configUSE_HW_TIMER1=1",
+            "dg_configUSE_HW_TIMER2=0",
+            "dg_configUSE_HW_TRNG=1",
+            "dg_configUSE_HW_UART=1",
+            "dg_configUSE_HW_USB_CHARGER=1",
+            "dg_configUSE_HW_CHARGER=0",
+            "dg_configUSE_HW_WKUP=1",
+            "dg_configUSE_IF_PDM=0",
+            "MODE_IS_CACHED=1",
+            "dg_configEXEC_MODE=MODE_IS_CACHED",
+            "DEVELOPMENT_MODE=0",
+            "dg_configIMAGE_SETUP=DEVELOPMENT_MODE"            
         ],
         "device_has": [
-            "MPU",
-            "SERIAL",
-            "STDIO_MESSAGES",
-            "LPTICKER",
-            "SPI",
-            "FLASH"
-        ],
-        "features": [
-            "BLE",
-            "STORAGE"
+            "MPU"
         ],
         "extra_labels": [
             "Dialog",
             "DA1469x",
-            "SDK10",
-            "CORDIO"
+            "SDK_10",
+            "startup",
+            "peripherals",
+            "ldscripts"            
         ],
-        "components_add": [
-            "FLASHIAP"
-        ],
-        "bootloader_supported": true,
+
         "config": {}
     },
     "__build_tools_metadata__": {

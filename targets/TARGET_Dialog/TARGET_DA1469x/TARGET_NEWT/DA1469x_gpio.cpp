@@ -205,7 +205,7 @@ void gpio_mode(gpio_t *obj, PinMode mode)
     __HAL_DISABLE_INTERRUPTS(primask);
 
     mcu_gpio_unlatch_prepare(obj->pin);
-
+ 
     *px_xx_mod_reg = regval;
 
     mcu_gpio_unlatch(obj->pin);

@@ -339,7 +339,8 @@ static void configure_pdc(void)
         hw_pdc_acknowledge(pdc_entry_index);
 #endif
 
-#if defined(OS_FREERTOS)
+//#if defined(OS_FREERTOS)
+#if (1)
         /* FreeRTOS Timer requires PD_TIM to be always on */
         REG_SETF(CRG_TOP, PMU_CTRL_REG, TIM_SLEEP, 0);
         while (REG_GETF(CRG_TOP, SYS_STAT_REG, TIM_IS_UP) == 0) {

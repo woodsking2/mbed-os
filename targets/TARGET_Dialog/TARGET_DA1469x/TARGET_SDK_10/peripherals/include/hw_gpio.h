@@ -28,7 +28,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <sdk_defs.h>
-
+#include "PinNames.h"
 /**
  * Definitions of boards UART retarget GPIO pins, mode and function
  */
@@ -129,6 +129,31 @@ typedef enum {
         HW_GPIO_PIN_31 = 31,    /**< GPIO Pin 31 */
         HW_GPIO_PIN_MAX         /**< GPIO Pin max*/
 } HW_GPIO_PIN;
+
+
+__STATIC_FORCEINLINE HW_GPIO_PORT PinName_to_port(PinName pin)
+{
+        if (pin <= P0_31)
+        {
+                return HW_GPIO_PORT_0;
+        }
+        else
+        {
+                return HW_GPIO_PORT_1;
+        }
+}
+
+__STATIC_FORCEINLINE HW_GPIO_PIN PinName_to_pin(PinName pin)
+{
+        if (pin <= P0_31)
+        {
+                return (HW_GPIO_PIN)pin;
+        }
+        else
+        {
+                return (HW_GPIO_PIN)(pin - P1_0);
+        }
+}
 
 /**
  * \brief GPIO function
@@ -579,7 +604,12 @@ __STATIC_FORCEINLINE bool hw_gpio_pad_latch_is_enabled(HW_GPIO_PORT port, HW_GPI
 */
 bool hw_gpio_get_pin_with_function(HW_GPIO_FUNC func, HW_GPIO_PORT* port, HW_GPIO_PIN* pin);
 
-
+__STATIC_FORCEINLINE void hw_gpio_set_default(PinName pin)
+{
+        hw_gpio_set_pin_function(PinName_to_port(pin), PinName_to_pin(pin), HW_GPIO_MODE_INPUT_PULLDOWN, HW_GPIO_FUNC_GPIO);
+        hw_gpio_pad_latch_enable(PinName_to_port(pin), PinName_to_pin(pin));
+        hw_gpio_pad_latch_disable(PinName_to_port(pin), PinName_to_pin(pin));
+}
 #endif /* dg_configUSE_HW_GPIO */
 
 #endif /* HW_GPIO_H_ */

@@ -3,7 +3,7 @@
 
 struct serial_s
 {
-    int unused;
+    void* instance;
 };
 typedef struct
 {

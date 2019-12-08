@@ -461,61 +461,58 @@ SECTIONS
     /* Check if data + heap + stack exceeds RAM limit */
     ASSERT(__HeapBase <= __HeapLimit, "region RAM overflowed with stack")
 #if ( dg_configUSE_SEGGER_FLASH_LOADER == 1 )
+        .prod_head :
+        AT ( QSPI_FLASH_ADDRESS)
+        {
+                SHORT(0x7050)                   // 'Pp' flag
+                LONG(QSPI_FW_BASE_OFFSET)       // active image pointer
+                LONG(QSPI_FW_BASE_OFFSET)       // update image pointer
+                LONG(0xA8A500EB)                // busrtcmdA
+                LONG(0x66)                      // busrtcmdB
+                SHORT(0x11AA)                   // Flash config section
+                SHORT(0x03)                     // Flash config length
+                BYTE(0x01)                      // Flash config sequence
+                BYTE(0x40)                      // Flash config sequence
+                BYTE(0x07)                      // Flash config sequence
+                SHORT(0x4EC8)                   // CRC
 
-    .prod_head :
-    AT ( QSPI_FLASH_ADDRESS)
-    {
-            SHORT(0x7050)                   // 'Pp' flag
-            LONG(QSPI_FW_BASE_OFFSET)       // active image pointer
-            LONG(QSPI_FW_BASE_OFFSET)       // update image pointer
-            LONG(0xa82000eb)                // busrtcmdA
-            LONG(0x66)                      // busrtcmdB
-            SHORT(0x11AA)                   // Flash config section
-            SHORT(0x04)                     // Flash config length
-            BYTE(0x01)                      // Flash config sequence
-            BYTE(0x00)                      // Flash config sequence
-            BYTE(0x02)                      // Flash config sequence
-            BYTE(0x07)                      // Flash config sequence
-            SHORT(0xEA4E)                   // CRC
+        } > ROM
 
-    } > ROM
+        .prod_head_backup :
+        AT ( QSPI_FLASH_ADDRESS + 0x1000)
+        {
+                SHORT(0x7050)                   // 'Pp' flag
+                LONG(QSPI_FW_BASE_OFFSET)       // active image pointer
+                LONG(QSPI_FW_BASE_OFFSET)       // update image pointer
+                LONG(0xA8A500EB)                // busrtcmdA
+                LONG(0x66)                      // busrtcmdB
+                SHORT(0x11AA)                   // Flash config section
+                SHORT(0x03)                     // Flash config length
+                BYTE(0x01)                      // Flash config sequence
+                BYTE(0x40)                      // Flash config sequence
+                BYTE(0x07)                      // Flash config sequence
+                SHORT(0x4EC8)                   // CRC
 
-    .prod_head_backup :
-    AT ( QSPI_FLASH_ADDRESS + 0x1000)
-    {
-            SHORT(0x7050)                   // 'Pp' flag
-            LONG(QSPI_FW_BASE_OFFSET)       // active image pointer
-            LONG(QSPI_FW_BASE_OFFSET)       // update image pointer
-            LONG(0xa82000eb)                // busrtcmdA
-            LONG(0x66)                      // busrtcmdB
-            SHORT(0x11AA)                   // Flash config section
-            SHORT(0x04)                     // Flash config length
-            BYTE(0x01)                      // Flash config sequence
-            BYTE(0x00)                      // Flash config sequence
-            BYTE(0x02)                      // Flash config sequence
-            BYTE(0x07)                      // Flash config sequence
-            SHORT(0xEA4E)                   // CRC
+        } > ROM
 
-    } > ROM
+        .img_head :
+        AT (QSPI_FW_BASE_ADDRESS)
+        {
+                SHORT(0x7151)                   // 'Pp' flag
+                LONG(SIZEOF(.text))
+                LONG(0x0)                       // crc, doesn't matter
+                LONG(0x0)                       // version, doesn't matter
+                LONG(0x0)                       // version, doesn't matter
+                LONG(0x0)                       // version, doesn't matter
+                LONG(0x0)                       // version, doesn't matter
+                LONG(0x0)                       // timestamp, doesn't matter
+                LONG(QSPI_FW_IVT_OFFSET)        // IVT pointer
+                SHORT(0x22AA)                   // Security section type
+                SHORT(0x0)                      //Security section length
+                SHORT(0x44AA)                   // Device admin type
+                SHORT(0x0)                      // Device admin length
 
-    .img_head :
-    AT (QSPI_FW_BASE_ADDRESS)
-    {
-            SHORT(0x7151)                   // 'Qq' flag
-            LONG(SIZEOF(.text))
-            LONG(0x0)                       // crc, doesn't matter
-            LONG(0x0)                       // version, doesn't matter
-            LONG(0x0)                       // version, doesn't matter
-            LONG(0x0)                       // version, doesn't matter
-            LONG(0x0)                       // version, doesn't matter
-            LONG(0x0)                       // timestamp, doesn't matter
-            LONG(QSPI_FW_IVT_OFFSET)        // IVT pointer
-            SHORT(0x22AA)                   // Security section type
-            SHORT(0x0)                      //Security section length
-            SHORT(0x44AA)                   // Device admin type
-            SHORT(0x0)                      // Device admin length
-
-    } > ROM
+        } > ROM
 #endif /* dg_configUSE_SEGGER_FLASH_LOADER */
      
 }

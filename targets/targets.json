@@ -9700,10 +9700,16 @@
             "dg_configUSE_SEGGER_FLASH_LOADER=1",
             "dg_config_RETAINED_UNINIT_SECTION_SIZE=128",
             "dg_configFLASH_AUTODETECT=1",
+            "NVIC_RAM_VECTOR_ADDRESS=0x20000000",
+            "NVIC_NUM_VECTORS=0x80",
+            "MBED_MPU_CUSTOM",
+            "CONFIG_USE_BLE",            
             "dg_configIMAGE_SETUP=DEVELOPMENT_MODE"          
         ],
         "device_has": [
-            "MPU"
+            "MPU",            
+            "SERIAL",
+            "STDIO_MESSAGES"
         ],
         "extra_labels": [
             "Dialog",

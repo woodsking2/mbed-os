@@ -9664,7 +9664,7 @@
             "Target"
         ],
         "core": "Cortex-M33",
-        "OUTPUT_EXT": "hex",
+        "OUTPUT_EXT": "bin",
         "device_name": "DA1469x",
         "supported_toolchains": [
             "GCC_ARM"

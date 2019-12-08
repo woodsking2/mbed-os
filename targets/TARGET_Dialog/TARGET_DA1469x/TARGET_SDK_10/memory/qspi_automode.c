@@ -114,6 +114,7 @@ typedef struct _pm_qspi_ops {
 
 #if (FLASH_AUTODETECT == 1)
 #               include "qspi_gd25le32.h"
+#               include "qspi_gd25lq128.h"
 #               include "qspi_mx25u3235.h"
 #               include "qspi_w25q32fw.h"
 #               include "psram_aps1604jsq.h"
@@ -122,6 +123,7 @@ typedef struct _pm_qspi_ops {
 
 static const qspi_flash_config_t* flash_config_table[] = {
                 &flash_gd25le32_config,
+                &flash_gd25lq128_config,                
                 &flash_mx25u3235_config,
                 &flash_w25q32fw_config,
                 &psram_aps1604jsq_config,

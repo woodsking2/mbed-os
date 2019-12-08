@@ -20,7 +20,7 @@
  *
  ****************************************************************************************
  */
-
+#include "default_config.h"
 #if dg_configUSE_HW_QSPI || dg_configUSE_HW_QSPI2
 
 #include <stdint.h>

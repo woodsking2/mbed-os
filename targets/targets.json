@@ -9699,6 +9699,7 @@
             "dg_configQSPI_CACHED_RAM_SIZE_AA=512*1024",
             "dg_configUSE_SEGGER_FLASH_LOADER=1",
             "dg_config_RETAINED_UNINIT_SECTION_SIZE=128",
+            "dg_configFLASH_AUTODETECT=1",
             "dg_configIMAGE_SETUP=DEVELOPMENT_MODE"          
         ],
         "device_has": [

@@ -13,6 +13,40 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#define NON_VOLATILE_IS_OTP             0       // Code is in OTP
+#define NON_VOLATILE_IS_FLASH           1       // Code is in QSPI Flash
+#define NON_VOLATILE_IS_NONE            2       // Debug mode! Code is in RAM!
+
+#define MODE_IS_MIRRORED                0
+#define MODE_IS_CACHED                  1
+#define MODE_IS_RAM                     MODE_IS_MIRRORED
+
+/*************************************************************************************************\
+ * Memory layout configuration
+ */
+#if (dg_configCODE_LOCATION == NON_VOLATILE_IS_FLASH)
+        #if (dg_configEXEC_MODE == MODE_IS_CACHED)
+                #define CODE_SIZE       dg_configQSPI_CODE_SIZE_AA
+                #define RAM_SIZE        dg_configQSPI_CACHED_RAM_SIZE_AA
+        #else // MIRRORED
+                #error "QSPI mirrored mode is not supported!"
+        #endif
+#elif (dg_configCODE_LOCATION == NON_VOLATILE_IS_NONE)
+#if (dg_configEXEC_MODE == MODE_IS_CACHED)
+        #pragma message "RAM cached mode is not supported! Resetting to RAM (mirrored) mode!"
+        #undef dg_configEXEC_MODE
+        #define dg_configEXEC_MODE      MODE_IS_RAM
+#endif
+
+        #define CODE_SIZE       dg_configRAM_CODE_SIZE_AA
+
+#if (CODE_SZ > 512)
+#error "The used CODE_SZ value exceed the total amount of RAM!"
+#endif
+#else
+        #error "Unknown configuration..."
+#endif
+
 #define IVT_AREA_OVERHEAD               0x200
 
 #if (dg_configCODE_LOCATION == NON_VOLATILE_IS_NONE)

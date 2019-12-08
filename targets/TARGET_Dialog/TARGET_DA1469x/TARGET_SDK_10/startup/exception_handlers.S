@@ -3,7 +3,7 @@
  * This computer program includes Confidential, Proprietary Information
  * of Dialog Semiconductor. All Rights Reserved.
  */
-
+#include "bsp_definitions.h"
 
 #define SYS_CTRL_REG                            0x50000024
 #define SYS_CTRL_REG_DEBUGGER_ENABLE_MSK        0x80

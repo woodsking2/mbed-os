@@ -40,7 +40,7 @@
 #    error "Please use gcc version 4.9.3 or newer!"
 #  endif
 #endif
-
+#include "default_config.h"
 #if (dg_configUSE_AUTO_CHIP_DETECTION == 1)
    /* use a register description that is generic enough for our needs */
 #   include "DA1469xAB.h"

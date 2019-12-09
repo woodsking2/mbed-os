@@ -9697,7 +9697,7 @@
             "dg_configUSE_Board=\"wf01_board.h\"",
             "dg_configQSPI_CODE_SIZE_AA=370*1024",
             "dg_configQSPI_CACHED_RAM_SIZE_AA=512*1024",
-            "dg_configUSE_SEGGER_FLASH_LOADER=1",
+            "dg_configUSE_SEGGER_FLASH_LOADER=0",
             "dg_config_RETAINED_UNINIT_SECTION_SIZE=128",
             "dg_configFLASH_AUTODETECT=1",
             "MBED_MPU_CUSTOM",

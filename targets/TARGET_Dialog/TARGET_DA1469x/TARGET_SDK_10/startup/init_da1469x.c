@@ -379,6 +379,10 @@ static void configure_pdc(void)
 void SystemInitPre(void) __attribute__((section("text_reset")));
 void SystemInitPre(void)
 {
+        SCB->CPACR |= (3UL << 20) | (3UL << 22);
+        __DSB();
+        __ISB();
+        
         /*
          * Enable M33 debugger.
          */

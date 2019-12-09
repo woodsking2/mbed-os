@@ -1,0 +1,25 @@
+        {
+            "label": "boot_debug_qspi",
+            "type": "shell",
+            "command": "${workspaceRoot}/mbed-os/targets/TARGET_Dialog/TARGET_DA1469x/TARGET_SDK_10/utilities/python_scripts/qspi/program_qspi.py",
+            "args": [
+                "--jlink",
+                "--jlink_path",
+                "D:/Program Files (x86)/SEGGER/JLink",
+                "${workspaceRoot}/BUILD/DA1469X/GCC_ARM-DEBUG/sabomo.bin",                
+                "--prod_header"
+            ],
+            "problemMatcher": []
+        },
+        {
+            "label": "boot_debug_serial",
+            "type": "shell",
+            "command": "${workspaceRoot}/mbed-os/targets/TARGET_Dialog/TARGET_DA1469x/TARGET_SDK_10/utilities/cli_programmer.exe",
+            "args": [
+                "com8",
+                "write_qspi",
+                "0x0",
+                "${workspaceRoot}/BUILD/DA1469X/GCC_ARM-DEBUG/sabomo.bin"
+            ],
+            "problemMatcher": []
+        },

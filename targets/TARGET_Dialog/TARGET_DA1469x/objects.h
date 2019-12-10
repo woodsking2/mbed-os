@@ -1,16 +1,23 @@
 #pragma once
 #include "PinNames.h"
+#include "PeripheralNames.h"
 
-struct serial_s
+#ifdef __cplusplus
+class gpio_t
 {
-    void* instance;
-};
-typedef struct
-{
+  public:
     PinName pin;
     PinDirection direction;
     int value;
-} gpio_t;
+    gpio_t();
+    ~gpio_t();
+};
+#endif
+
+struct serial_s
+{
+    void *instance;
+};
 
 struct Spi_instance;
 struct spi_s

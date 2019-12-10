@@ -9709,7 +9709,9 @@
             "MPU",            
             "SERIAL",
             "STDIO_MESSAGES",
-            "LPTICKER"
+            "LPTICKER",
+            "SPI",
+            "SPI_ASYNCH"
         ],
         "extra_labels": [
             "Dialog",

@@ -58,6 +58,10 @@ public:
         gpio_init_inout(&gpio, pin, direction, mode, value);
     }
 
+    ~DigitalInOut()
+    {
+        gpio_uninit(&gpio);
+    }
     /** Set the output, specified as 0 or 1 (int)
      *
      *  @param value An integer specifying the pin output value,

@@ -54,6 +54,7 @@ InterruptIn::~InterruptIn()
 {
     // No lock needed in the destructor
     gpio_irq_free(&gpio_irq);
+    gpio_uninit(&gpio);
 }
 
 int InterruptIn::read()

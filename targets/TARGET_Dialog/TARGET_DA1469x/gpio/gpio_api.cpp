@@ -20,14 +20,6 @@ extern "C"
  *
  * @{
  */
-gpio_t::gpio_t()
-{
-    hw_sys_pd_com_enable();
-}
-gpio_t::~gpio_t()
-{
-    hw_sys_pd_com_disable();
-}
 
 /** Checks if gpio object is connected (pin was not initialized with NC)
  * @param obj The GPIO object
@@ -46,10 +38,14 @@ int gpio_is_connected(const gpio_t *obj)
  */
 void gpio_init(gpio_t *obj, PinName pin)
 {
+    hw_sys_pd_com_enable();
     obj->pin = pin;
     obj->direction = PIN_DIRECTION_UNSET;
 }
-
+void gpio_uninit(gpio_t *obj)
+{
+    hw_sys_pd_com_disable();
+}
 /** Set the input pin mode
  *
  * @param obj  The GPIO object (must be connected)
@@ -77,7 +73,6 @@ void gpio_mode(gpio_t *obj, PinMode mode)
     hw_gpio_set_pin_function(PinName_to_port(obj->pin), PinName_to_pin(obj->pin), hw_mode, HW_GPIO_FUNC_GPIO);
     hw_gpio_pad_latch_enable(PinName_to_port(obj->pin), PinName_to_pin(obj->pin));
     hw_gpio_pad_latch_disable(PinName_to_port(obj->pin), PinName_to_pin(obj->pin));
-
 }
 
 /** Set the pin direction
@@ -145,8 +140,8 @@ int gpio_read(gpio_t *obj)
         Expects(false);
         return 0;
     case PinDirection::PIN_INPUT:
-        return hw_gpio_get_pin_status(PinName_to_port(obj->pin), PinName_to_pin(obj->pin));
     case PinDirection::PIN_OUTPUT:
-        return obj->value;
+        return hw_gpio_get_pin_status(PinName_to_port(obj->pin), PinName_to_pin(obj->pin));
+
     }
 }

@@ -2,23 +2,20 @@
 #include "PinNames.h"
 #include "PeripheralNames.h"
 
-#ifdef __cplusplus
-class gpio_t
+typedef struct 
 {
-  public:
     PinName pin;
     PinDirection direction;
     int value;
-    gpio_t();
-    ~gpio_t();
-};
-#endif
-
+}gpio_t;
 struct serial_s
 {
     void *instance;
 };
-
+struct gpio_irq_s
+{
+    void *unused;
+};
 struct Spi_instance;
 struct spi_s
 {

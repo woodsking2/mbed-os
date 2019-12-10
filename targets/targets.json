@@ -9711,7 +9711,8 @@
             "STDIO_MESSAGES",
             "LPTICKER",
             "SPI",
-            "SPI_ASYNCH"
+            "SPI_ASYNCH",
+            "INTERRUPTIN"
         ],
         "extra_labels": [
             "Dialog",

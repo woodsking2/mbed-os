@@ -64,6 +64,13 @@ int gpio_is_connected(const gpio_t *obj);
  */
 void gpio_init(gpio_t *obj, PinName pin);
 
+/** Uninitialize the GPIO pin
+ *
+ * @param obj The GPIO object to initialize
+ * @param pin The GPIO pin to initialize (may be NC)
+ */
+void gpio_uninit(gpio_t *obj);
+
 /** Set the input pin mode
  *
  * @param obj  The GPIO object (must be connected)

@@ -637,7 +637,7 @@ __STATIC_INLINE void hw_timer_set_event4_gpio(HW_TIMER_GPIO gpio)
  */
 __STATIC_INLINE HW_TIMER_CLK_SRC hw_timer_get_clk(HW_TIMER_ID id)
 {
-        return HW_TIMER_REG_GETF(id, TIMER_CTRL_REG, TIM_SYS_CLK_EN);
+        return (HW_TIMER_CLK_SRC)(HW_TIMER_REG_GETF(id, TIMER_CTRL_REG, TIM_SYS_CLK_EN));
 }
 
 /**
@@ -725,7 +725,7 @@ __STATIC_INLINE bool hw_timer_get_freerun(HW_TIMER_ID id)
  */
 __STATIC_INLINE HW_TIMER_TRIGGER hw_timer_get_event1_trigger(HW_TIMER_ID id)
 {
-        return HW_TIMER_REG_GETF(id, TIMER_CTRL_REG, TIM_IN1_EVENT_FALL_EN);
+        return (HW_TIMER_TRIGGER)(HW_TIMER_REG_GETF(id, TIMER_CTRL_REG, TIM_IN1_EVENT_FALL_EN));
 }
 
 /**
@@ -738,7 +738,7 @@ __STATIC_INLINE HW_TIMER_TRIGGER hw_timer_get_event1_trigger(HW_TIMER_ID id)
  */
 __STATIC_INLINE HW_TIMER_TRIGGER hw_timer_get_event2_trigger(HW_TIMER_ID id)
 {
-        return HW_TIMER_REG_GETF(id, TIMER_CTRL_REG, TIM_IN2_EVENT_FALL_EN);
+        return (HW_TIMER_TRIGGER)(HW_TIMER_REG_GETF(id, TIMER_CTRL_REG, TIM_IN2_EVENT_FALL_EN));
 }
 
 /**
@@ -749,7 +749,7 @@ __STATIC_INLINE HW_TIMER_TRIGGER hw_timer_get_event2_trigger(HW_TIMER_ID id)
  */
 __STATIC_INLINE HW_TIMER_TRIGGER hw_timer_get_event3_trigger(void)
 {
-        return REG_GETF(TIMER, TIMER_CTRL_REG, TIM_IN3_EVENT_FALL_EN);
+        return (HW_TIMER_TRIGGER)(REG_GETF(TIMER, TIMER_CTRL_REG, TIM_IN3_EVENT_FALL_EN));
 }
 
 /**
@@ -760,7 +760,7 @@ __STATIC_INLINE HW_TIMER_TRIGGER hw_timer_get_event3_trigger(void)
  */
 __STATIC_INLINE HW_TIMER_TRIGGER hw_timer_get_event4_trigger(void)
 {
-        return REG_GETF(TIMER, TIMER_CTRL_REG, TIM_IN4_EVENT_FALL_EN);
+        return (HW_TIMER_TRIGGER)(REG_GETF(TIMER, TIMER_CTRL_REG, TIM_IN4_EVENT_FALL_EN));
 }
 /**
  * \brief Get a GPIO input which triggers event1.
@@ -772,7 +772,7 @@ __STATIC_INLINE HW_TIMER_TRIGGER hw_timer_get_event4_trigger(void)
  */
 __STATIC_INLINE HW_TIMER_GPIO hw_timer_get_event1_gpio(HW_TIMER_ID id)
 {
-        return TBA(id)->TIMER_GPIO1_CONF_REG;
+        return (HW_TIMER_GPIO)(TBA(id)->TIMER_GPIO1_CONF_REG);
 }
 
 /**
@@ -785,7 +785,7 @@ __STATIC_INLINE HW_TIMER_GPIO hw_timer_get_event1_gpio(HW_TIMER_ID id)
  */
 __STATIC_INLINE HW_TIMER_GPIO hw_timer_get_event2_gpio(HW_TIMER_ID id)
 {
-        return TBA(id)->TIMER_GPIO2_CONF_REG;
+        return (HW_TIMER_GPIO)(TBA(id)->TIMER_GPIO2_CONF_REG);
 }
 
 /**
@@ -796,7 +796,7 @@ __STATIC_INLINE HW_TIMER_GPIO hw_timer_get_event2_gpio(HW_TIMER_ID id)
  */
 __STATIC_INLINE HW_TIMER_GPIO hw_timer_get_event3_gpio(void)
 {
-        return TIMER->TIMER_GPIO3_CONF_REG;
+        return (HW_TIMER_GPIO)(TIMER->TIMER_GPIO3_CONF_REG);
 }
 
 /**
@@ -807,7 +807,7 @@ __STATIC_INLINE HW_TIMER_GPIO hw_timer_get_event3_gpio(void)
  */
 __STATIC_INLINE HW_TIMER_GPIO hw_timer_get_event4_gpio(void)
 {
-        return TIMER->TIMER_GPIO4_CONF_REG;
+        return (HW_TIMER_GPIO)(TIMER->TIMER_GPIO4_CONF_REG);
 }
 
 /**
@@ -892,7 +892,7 @@ __STATIC_INLINE void hw_timer_set_mode(HW_TIMER_ID id, HW_TIMER_MODE mode)
  */
 __STATIC_INLINE HW_TIMER_MODE hw_timer_get_mode(HW_TIMER_ID id)
 {
-        return HW_TIMER_REG_GETF(id, TIMER_CTRL_REG, TIM_ONESHOT_MODE_EN);
+        return (HW_TIMER_MODE)(HW_TIMER_REG_GETF(id, TIMER_CTRL_REG, TIM_ONESHOT_MODE_EN));
 }
 
 /**
@@ -921,7 +921,7 @@ __STATIC_INLINE uint32_t hw_timer_get_count(HW_TIMER_ID id)
  */
 __STATIC_INLINE HW_TIMER_ONESHOT hw_timer_get_oneshot_phase(HW_TIMER_ID id)
 {
-        return HW_TIMER_REG_GETF(id, TIMER_STATUS_REG, TIM_ONESHOT_PHASE);
+        return (HW_TIMER_ONESHOT)(HW_TIMER_REG_GETF(id, TIMER_STATUS_REG, TIM_ONESHOT_PHASE));
 }
 
 /**

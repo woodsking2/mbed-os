@@ -73,8 +73,8 @@ void serial_format(serial_t *obj, int data_bits, SerialParity parity, int stop_b
 void serial_irq_handler(serial_t *obj, uart_irq_handler handler, uint32_t id)
 {
     Expects(false);
-    Expects(obj);
-    Serial_instance *instance = (Serial_instance *)(obj->instance);
+    // Expects(obj);
+    // Serial_instance *instance = (Serial_instance *)(obj->instance);
 }
 
 /** Configure serial interrupt. This function is used for word-approach
@@ -86,8 +86,8 @@ void serial_irq_handler(serial_t *obj, uart_irq_handler handler, uint32_t id)
 void serial_irq_set(serial_t *obj, SerialIrq irq, uint32_t enable)
 {
     Expects(false);
-    Expects(obj);
-    Serial_instance *instance = (Serial_instance *)(obj->instance);
+    // Expects(obj);
+    // Serial_instance *instance = (Serial_instance *)(obj->instance);
 }
 /** Get character. This is a blocking call, waiting for a character
  *
@@ -96,8 +96,8 @@ void serial_irq_set(serial_t *obj, SerialIrq irq, uint32_t enable)
 int serial_getc(serial_t *obj)
 {
     Expects(false);
-    Expects(obj);
-    Serial_instance *instance = (Serial_instance *)(obj->instance);
+    // Expects(obj);
+    // Serial_instance *instance = (Serial_instance *)(obj->instance);
 }
 
 /** Send a character. This is a blocking call, waiting for a peripheral to be available
@@ -147,8 +147,8 @@ int serial_writable(serial_t *obj)
  */
 void serial_clear(serial_t *obj)
 {
-    Expects(obj);
-    Serial_instance *instance = (Serial_instance *)(obj->instance);
+    // Expects(obj);
+    // Serial_instance *instance = (Serial_instance *)(obj->instance);
 }
 
 /** Set the break
@@ -158,8 +158,8 @@ void serial_clear(serial_t *obj)
 void serial_break_set(serial_t *obj)
 {
     Expects(false);
-    Expects(obj);
-    Serial_instance *instance = (Serial_instance *)(obj->instance);
+    // Expects(obj);
+    // Serial_instance *instance = (Serial_instance *)(obj->instance);
 }
 
 /** Clear the break
@@ -169,8 +169,8 @@ void serial_break_set(serial_t *obj)
 void serial_break_clear(serial_t *obj)
 {
     Expects(false);
-    Expects(obj);
-    Serial_instance *instance = (Serial_instance *)(obj->instance);
+    // Expects(obj);
+    // Serial_instance *instance = (Serial_instance *)(obj->instance);
 }
 
 /** Configure the TX pin for UART function.

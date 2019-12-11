@@ -63,11 +63,11 @@ extern "C"
         P1_8 = 40,
         P1_9 = 41,
         P1_10 = 42,
-        P1_11 = 43,        
-
-        STDIO_UART_TX = P0_9,        
+        P1_11 = 43,
+        PinCount,
+        STDIO_UART_TX = P0_9,
         NC = (int)0xFFFFFFFF,
-        STDIO_UART_RX = NC,        
+        STDIO_UART_RX = NC,
     } PinName;
 
     typedef enum

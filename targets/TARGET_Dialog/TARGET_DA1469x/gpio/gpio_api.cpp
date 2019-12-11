@@ -6,6 +6,7 @@ extern "C"
 #include "hw_gpio.h"
 #include "hw_sys.h"
 }
+using namespace gsl;
 /**
  * \defgroup hal_gpio GPIO HAL functions
  *
@@ -38,13 +39,8 @@ int gpio_is_connected(const gpio_t *obj)
  */
 void gpio_init(gpio_t *obj, PinName pin)
 {
-    hw_sys_pd_com_enable();
     obj->pin = pin;
     obj->direction = PIN_DIRECTION_UNSET;
-}
-void gpio_uninit(gpio_t *obj)
-{
-    hw_sys_pd_com_disable();
 }
 /** Set the input pin mode
  *
@@ -57,6 +53,8 @@ void gpio_mode(gpio_t *obj, PinMode mode)
     {
         return;
     }
+    hw_sys_pd_com_enable();
+    auto _ = finally([&]() { hw_sys_pd_com_disable(); });
     HW_GPIO_MODE hw_mode{HW_GPIO_MODE_INPUT};
     switch (mode)
     {
@@ -95,8 +93,10 @@ void gpio_dir(gpio_t *obj, PinDirection direction)
 
     case PinDirection::PIN_OUTPUT:
     {
+        // hw_sys_pd_com_enable();
+        // auto _ = finally([&]() { hw_sys_pd_com_disable(); });
         obj->direction = PIN_OUTPUT;
-        hw_gpio_set_pin_function(PinName_to_port(obj->pin), PinName_to_pin(obj->pin), HW_GPIO_MODE_OUTPUT, HW_GPIO_FUNC_GPIO);
+        // hw_gpio_set_pin_function(PinName_to_port(obj->pin), PinName_to_pin(obj->pin), HW_GPIO_MODE_OUTPUT, HW_GPIO_FUNC_GPIO);
         gpio_write(obj, obj->value);
     }
     break;
@@ -115,6 +115,9 @@ void gpio_write(gpio_t *obj, int value)
     {
         return;
     }
+    hw_sys_pd_com_enable();
+    auto _ = finally([&]() { hw_sys_pd_com_disable(); });
+    hw_gpio_set_pin_function(PinName_to_port(obj->pin), PinName_to_pin(obj->pin), HW_GPIO_MODE_OUTPUT, HW_GPIO_FUNC_GPIO);
     if (value)
     {
         hw_gpio_set_active(PinName_to_port(obj->pin), PinName_to_pin(obj->pin));
@@ -141,7 +144,12 @@ int gpio_read(gpio_t *obj)
         return 0;
     case PinDirection::PIN_INPUT:
     case PinDirection::PIN_OUTPUT:
+    {
+        hw_sys_pd_com_enable();
+        auto _ = finally([&]() { hw_sys_pd_com_disable(); });
         return hw_gpio_get_pin_status(PinName_to_port(obj->pin), PinName_to_pin(obj->pin));
-
     }
+    }
+    Expects(false);
+    return 0;
 }

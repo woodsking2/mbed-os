@@ -74,10 +74,7 @@ public:
         // No lock needed in the constructor
         gpio_init_in_ex(&gpio, pin, mode);
     }
-    ~DigitalIn()
-    {
-        gpio_uninit(&gpio);
-    }
+        
     /** Read the input, represented as 0 or 1 (int)
      *
      *  @returns

@@ -338,7 +338,7 @@ __STATIC_INLINE void hw_wkup_set_pin_trigger(HW_GPIO_PORT port, HW_GPIO_PIN pin,
 __STATIC_INLINE HW_WKUP_PIN_STATE hw_wkup_get_pin_trigger(HW_GPIO_PORT port, HW_GPIO_PIN pin)
 {
         uint32_t pol_rx_reg = *((volatile uint32_t *)(&WAKEUP->WKUP_POL_P0_REG) + port);
-        return (pol_rx_reg & (1 << pin)) >> pin;
+        return (HW_WKUP_PIN_STATE)((pol_rx_reg & (1 << pin)) >> pin);
 }
 
 /**

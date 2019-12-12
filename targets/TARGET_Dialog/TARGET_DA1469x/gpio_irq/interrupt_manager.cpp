@@ -45,16 +45,17 @@ void Interrupt_manager::Impl::interrupt()
         status = hw_wkup_get_status(static_cast<HW_GPIO_PORT>(port));
         for (auto bit = 0; bit < HW_GPIO_PIN_MAX; bit++)
         {
-            if (status | (1 << bit))
+            if (status & (1 << bit))
             {
-                pin = port_pin_to_PinName(static_cast<HW_GPIO_PORT>(port), static_cast<HW_GPIO_PIN>(bit));
+                pin = port_pin_to_PinName(static_cast<HW_GPIO_PORT>(port), static_cast<HW_GPIO_PIN>(bit));                
                 instance = m_instances.at(pin);
                 if (instance != 0)
-                {
+                {                    
                     instance->triggered();
                 }
             }
         }
+        hw_wkup_clear_status(static_cast<HW_GPIO_PORT>(port), 0xFFFFFFFF);
     }
     enable_interrupt();
 }
@@ -71,6 +72,7 @@ void Interrupt_manager::Impl::enable_interrupt()
 Interrupt_manager::Impl::Impl()
 {
     hw_wkup_init(0);
+    enable_interrupt();
 }
 void Interrupt_manager::Impl::add(PinName pin, Interrupt_instance *instance)
 {

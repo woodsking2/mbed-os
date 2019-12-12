@@ -1860,8 +1860,10 @@ typedef struct {                                /*!< (@ 0x50000100) WAKEUP Struc
 #define SDADC                       ((SDADC_Type*)             SDADC_BASE)
 #define SMOTOR                      ((SMOTOR_Type*)            SMOTOR_BASE)
 #define SNC                         ((SNC_Type*)               SNC_BASE)
-// #define SPI_ADDRE                  ((SPI_Type*)               SPI_BASE)
-// #define SPI2_POINTER                ((SPI2_Type*)              SPI2_BASE)
+#ifdef HAL_1469X
+#define SPI                         ((SPI_Type*)               SPI_BASE)
+#define SPI2                        ((SPI2_Type*)              SPI2_BASE)
+#endif
 #define SYS_WDOG                    ((SYS_WDOG_Type*)          SYS_WDOG_BASE)
 #define TIMER                       ((TIMER_Type*)             TIMER_BASE)
 #define TIMER2                      ((TIMER2_Type*)            TIMER2_BASE)

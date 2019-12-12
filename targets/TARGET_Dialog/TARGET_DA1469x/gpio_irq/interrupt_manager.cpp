@@ -3,6 +3,7 @@
 #include "gsl/gsl"
 #include "Main_thread.h"
 #include <array>
+#include "PlatformMutex.h"
 extern "C"
 {
 #include "default_config.h"
@@ -24,6 +25,7 @@ void interrupt_handler()
 class Interrupt_manager::Impl
 {
   private:
+    PlatformMutex m_mutex;
     array<Interrupt_instance *, PinCount> m_instances;
     void enable_interrupt();
     void interrupt();
@@ -36,6 +38,8 @@ class Interrupt_manager::Impl
 };
 void Interrupt_manager::Impl::interrupt()
 {
+    m_mutex.lock();
+    auto _ = finally([&]() { m_mutex.unlock(); });
     debug("Interrupt_manager::Impl::interrupt\n");
     uint32_t status{};
     PinName pin{};
@@ -47,10 +51,10 @@ void Interrupt_manager::Impl::interrupt()
         {
             if (status & (1 << bit))
             {
-                pin = port_pin_to_PinName(static_cast<HW_GPIO_PORT>(port), static_cast<HW_GPIO_PIN>(bit));                
+                pin = port_pin_to_PinName(static_cast<HW_GPIO_PORT>(port), static_cast<HW_GPIO_PIN>(bit));
                 instance = m_instances.at(pin);
                 if (instance != 0)
-                {                    
+                {
                     instance->triggered();
                 }
             }
@@ -66,6 +70,8 @@ void Interrupt_manager::Impl::interrupt_from_isr()
 }
 void Interrupt_manager::Impl::enable_interrupt()
 {
+    m_mutex.lock();
+    auto _ = finally([&]() { m_mutex.unlock(); });
     hw_wkup_register_gpio_p0_interrupt(interrupt_handler, PRIORITY_15);
     hw_wkup_register_gpio_p1_interrupt(interrupt_handler, PRIORITY_15);
 }
@@ -76,10 +82,14 @@ Interrupt_manager::Impl::Impl()
 }
 void Interrupt_manager::Impl::add(PinName pin, Interrupt_instance *instance)
 {
+    m_mutex.lock();
+    auto _ = finally([&]() { m_mutex.unlock(); });
     m_instances.at(static_cast<int>(pin)) = instance;
 }
 void Interrupt_manager::Impl::remove(PinName pin)
 {
+    m_mutex.lock();
+    auto _ = finally([&]() { m_mutex.unlock(); });
     m_instances.at(static_cast<int>(pin)) = 0;
 }
 Interrupt_manager::Interrupt_manager() : m_impl(make_unique<Interrupt_manager::Impl>())

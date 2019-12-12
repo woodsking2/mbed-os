@@ -21,6 +21,7 @@
  ****************************************************************************************
  */
 
+#include "default_config.h"
 #if dg_configUSE_HW_DMA
 
 #include <hw_gpio.h>

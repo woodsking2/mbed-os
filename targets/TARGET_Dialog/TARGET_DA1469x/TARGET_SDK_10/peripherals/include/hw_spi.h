@@ -517,7 +517,7 @@ __STATIC_INLINE void hw_spi_disable_interrupt(HW_SPI_ID id)
 __STATIC_INLINE HW_SPI_MINT hw_spi_is_interrupt_enabled(HW_SPI_ID id)
 {
         // Get MINT bit from SPI control register
-        return HW_SPI_REG_GETF(id, SPI_CTRL_REG, SPI_MINT);
+        return (HW_SPI_MINT)(HW_SPI_REG_GETF(id, SPI_CTRL_REG, SPI_MINT));
 }
 /**
  * \brief Get the SPI interrupt bit value
@@ -617,7 +617,7 @@ __STATIC_INLINE void hw_spi_set_clock_phase(HW_SPI_ID id, HW_SPI_PHA phase)
 __STATIC_INLINE HW_SPI_PHA hw_spi_get_clock_phase(HW_SPI_ID id)
 {
         // Get SPI clock phase bit from SPI control register
-        return HW_SPI_REG_GETF(id, SPI_CTRL_REG, SPI_PHA);
+        return (HW_SPI_PHA)(HW_SPI_REG_GETF(id, SPI_CTRL_REG, SPI_PHA));
 }
 
 /**
@@ -647,7 +647,7 @@ __STATIC_INLINE void hw_spi_set_clock_polarity(HW_SPI_ID id, HW_SPI_POL pol)
 __STATIC_INLINE HW_SPI_POL hw_spi_get_clock_polarity(HW_SPI_ID id)
 {
         // Get SPI clock polarity bit from SPI control register
-        return HW_SPI_REG_GETF(id, SPI_CTRL_REG, SPI_POL);
+        return (HW_SPI_POL)(HW_SPI_REG_GETF(id, SPI_CTRL_REG, SPI_POL));
 }
 
 /**
@@ -683,7 +683,7 @@ __STATIC_INLINE void hw_spi_set_clock_freq(HW_SPI_ID id, HW_SPI_FREQ freq)
 __STATIC_INLINE HW_SPI_FREQ hw_spi_get_clock_freq(HW_SPI_ID id)
 {
         // Get SPI clock frequency field from SPI control register
-        return HW_SPI_REG_GETF(id, SPI_CTRL_REG, SPI_CLK);
+        return (HW_SPI_FREQ)(HW_SPI_REG_GETF(id, SPI_CTRL_REG, SPI_CLK));
 }
 
 /**
@@ -775,7 +775,7 @@ __STATIC_INLINE void hw_spi_set_mode(HW_SPI_ID id, HW_SPI_MODE smn)
 __STATIC_INLINE HW_SPI_MODE hw_spi_is_slave(HW_SPI_ID id)
 {
         // Get value of SPI master/slave mode from SPI control register
-        return HW_SPI_REG_GETF(id, SPI_CTRL_REG, SPI_SMN);
+        return (HW_SPI_MODE)(HW_SPI_REG_GETF(id, SPI_CTRL_REG, SPI_SMN));
 }
 
 /**
@@ -806,17 +806,17 @@ __STATIC_INLINE HW_SPI_WORD hw_spi_get_word_size(HW_SPI_ID id)
 {
         if (id == HW_SPI1) {
 #if HW_SPI1_USE_FIXED_WORD_SIZE == 1
-                return (HW_SPI1_FIXED_WORD_SIZE);
+                return (HW_SPI_WORD)(HW_SPI1_FIXED_WORD_SIZE);
 #else
                 // Get value of SPI master/slave mode from SPI control register
-                return REG_GETF(SPI, SPI_CTRL_REG, SPI_WORD);
+                return (HW_SPI_WORD)(REG_GETF(SPI, SPI_CTRL_REG, SPI_WORD));
 #endif
         } else {
 #if HW_SPI2_USE_FIXED_WORD_SIZE == 1
-                return (HW_SPI2_FIXED_WORD_SIZE);
+                return (HW_SPI_WORD)(HW_SPI2_FIXED_WORD_SIZE);
 #else
                 // Get value of SPI master/slave mode from SPI control register
-                return REG_GETF(SPI2, SPI2_CTRL_REG, SPI_WORD);
+                return (HW_SPI_WORD)(REG_GETF(SPI2, SPI2_CTRL_REG, SPI_WORD));
 #endif
         }
 }

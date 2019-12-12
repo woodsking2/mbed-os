@@ -9703,6 +9703,7 @@
             "MBED_MPU_CUSTOM",
             "MBED_TICKLESS",
             "CONFIG_USE_BLE",            
+            "dg_configUSE_HW_SPI",
             "dg_configIMAGE_SETUP=DEVELOPMENT_MODE"          
         ],
         "device_has": [
@@ -9710,8 +9711,7 @@
             "SERIAL",
             "STDIO_MESSAGES",
             "LPTICKER",
-            "SPI",
-            "SPI_ASYNCH",
+            "SPI",            
             "INTERRUPTIN"
         ],
         "extra_labels": [

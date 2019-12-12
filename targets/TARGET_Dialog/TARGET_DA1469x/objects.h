@@ -16,7 +16,6 @@ struct gpio_irq_s
 {
     void *instance;
 };
-struct Spi_instance;
 struct spi_s
 {
     void *instance;

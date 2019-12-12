@@ -37,6 +37,26 @@ class Interrupt_manager::Impl
 void Interrupt_manager::Impl::interrupt()
 {
     debug("Interrupt_manager::Impl::interrupt\n");
+    uint32_t status{};
+    PinName pin{};
+    Interrupt_instance *instance{};
+    for (int port = HW_GPIO_PORT_0; port < HW_GPIO_PORT_MAX; ++port)
+    {
+        status = hw_wkup_get_status(static_cast<HW_GPIO_PORT>(port));
+        for (auto bit = 0; bit < HW_GPIO_PIN_MAX; bit++)
+        {
+            if (status | (1 << bit))
+            {
+                pin = port_pin_to_PinName(static_cast<HW_GPIO_PORT>(port), static_cast<HW_GPIO_PIN>(bit));
+                instance = m_instances.at(pin);
+                if (instance != 0)
+                {
+                    instance->triggered();
+                }
+            }
+        }
+    }
+    enable_interrupt();
 }
 void Interrupt_manager::Impl::interrupt_from_isr()
 {

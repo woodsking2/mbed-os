@@ -42,7 +42,7 @@ class Interrupt_instance::Impl
     bool m_enable;
 
     void set_hw_interrupt(gpio_irq_event event);
-
+    bool read_pin_state();
   public:
     Impl(PinName pin, gpio_irq_handler handler, uint32_t id);
     ~Impl();
@@ -53,6 +53,7 @@ class Interrupt_instance::Impl
 void Interrupt_instance::Impl::triggered()
 {
     debug("%d triggered\n", static_cast<int>(m_pin));
+    auto pin_state
 }
 void Interrupt_instance::Impl::set_hw_interrupt(gpio_irq_event event)
 {

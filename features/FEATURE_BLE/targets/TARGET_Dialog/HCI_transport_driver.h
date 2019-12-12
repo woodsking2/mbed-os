@@ -12,13 +12,13 @@ namespace DA1469x
  * @brief on_data_received.接受
  * 
  */
-class DA1469x_HCI_transport_driver : public cordio::CordioHCITransportDriver
+class HCI_transport_driver : public cordio::CordioHCITransportDriver
 {
   
   public:
-    DA1469x_HCI_transport_driver(/* specific constructor arguments*/);
+    HCI_transport_driver(/* specific constructor arguments*/);
 
-    virtual ~DA1469x_HCI_transport_driver();
+    virtual ~HCI_transport_driver();
 
     virtual void initialize();
 

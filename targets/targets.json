@@ -9714,13 +9714,18 @@
             "SPI",            
             "INTERRUPTIN"
         ],
+        "features": [
+            "BLE",
+            "STORAGE"
+        ],
         "extra_labels": [
             "Dialog",
             "DA1469x",
             "SDK_10",
             "startup",
             "peripherals",
-            "ldscripts"            
+            "ldscripts",
+            "CORDIO"            
         ],
 
         "config": {}

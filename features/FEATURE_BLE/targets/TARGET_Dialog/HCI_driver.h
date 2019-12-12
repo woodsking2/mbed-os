@@ -8,14 +8,14 @@ namespace vendor
 namespace DA1469x
 {
 
-class DA1469x_HCI_driver : public cordio::CordioHCIDriver
+class HCI_driver : public cordio::CordioHCIDriver
 {
   public:
-    DA1469x_HCI_driver(cordio::CordioHCITransportDriver &transport_driver
+    HCI_driver(cordio::CordioHCITransportDriver &transport_driver
                        /* specific constructor arguments*/
     );
 
-    virtual ~DA1469x_HCI_driver();
+    virtual ~HCI_driver();
 
     virtual void do_initialize();
 

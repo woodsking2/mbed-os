@@ -60,7 +60,7 @@ __isr_vector:
                 .long   __StackTop              /* Top of Stack */
                 .long   Reset_Handler           /* Reset Handler */
                 .long   NMI_Handler             /* NMI Handler */
-                .long   HardFault_Handler_Custom       /* Hard Fault Handler */
+                .long   HardFault_Handler       /* Hard Fault Handler */
                 .long   MemManage_Handler       /* MPU Fault Handler */
                 .long   BusFault_Handler        /* Bus Fault Handler */
                 .long   UsageFault_Handler      /* Usage Fault Handler */

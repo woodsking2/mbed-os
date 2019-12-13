@@ -7,6 +7,7 @@ extern "C"
 {
 #include "default_config.h"
 #include "hw_pdc.h"
+#include "init_da1469x.h"
 }
 using namespace std;
 using namespace gsl;
@@ -80,9 +81,9 @@ struct cmac_config_dynamic
 struct cmac_mbox *cmac_mbox_rx;
 struct cmac_mbox *cmac_mbox_tx;
 
-int8_t g_da1469x_pdc_sys2cmac;
+// int8_t pdc_timer_cmac_index;
 
-int8_t g_da1469x_pdc_cmac2sys;
+// int8_t g_da1469x_pdc_cmac2sys;
 
 int on_read(uint8_t *buff, size_t len)
 {
@@ -94,7 +95,7 @@ int on_read(uint8_t *buff, size_t len)
 }
 void da1469x_cmac_pdc_signal(void)
 {
-    hw_pdc_set_pending(g_da1469x_pdc_sys2cmac);
+    hw_pdc_set_pending(pdc_timer_cmac_index);
 }
 void cmac2sys_isr(void)
 {
@@ -167,6 +168,7 @@ void Configurable_MAC::Impl::reset()
     // CRG_TOP->CLK_RADIO_REG = (0 << CRG_TOP_CLK_RADIO_REG_RFCU_ENABLE_Pos) | (1 << CRG_TOP_CLK_RADIO_REG_CMAC_SYNCH_RESET_Pos) | (0 << CRG_TOP_CLK_RADIO_REG_CMAC_CLK_SEL_Pos) |
     //                          (0 << CRG_TOP_CLK_RADIO_REG_CMAC_CLK_ENABLE_Pos) | (0 << CRG_TOP_CLK_RADIO_REG_CMAC_DIV_Pos);
 }
+
 __attribute__((optimize("-O0"))) void Configurable_MAC::Impl::initialize()
 {
     reset();
@@ -178,9 +180,12 @@ __attribute__((optimize("-O0"))) void Configurable_MAC::Impl::initialize()
     struct cmac_config_dynamic *cmac_config_dyn;
 
     /* Add PDC entry to wake up CMAC from M33 */
-    g_da1469x_pdc_sys2cmac = hw_pdc_add_entry(HW_PDC_LUT_ENTRY_VAL(HW_PDC_TRIG_SELECT_PERIPHERAL, HW_PDC_PERIPH_TRIG_ID_MAC_TIMER, HW_PDC_MASTER_CMAC, HW_PDC_LUT_ENTRY_EN_XTAL));
-    hw_pdc_set_pending(g_da1469x_pdc_sys2cmac);
-    hw_pdc_acknowledge(g_da1469x_pdc_sys2cmac);
+    // pdc_timer_cmac_index = hw_pdc_add_entry(HW_PDC_LUT_ENTRY_VAL(HW_PDC_TRIG_SELECT_PERIPHERAL, HW_PDC_PERIPH_TRIG_ID_MAC_TIMER, HW_PDC_MASTER_CMAC, HW_PDC_LUT_ENTRY_EN_XTAL));
+    hw_pdc_set_pending(pdc_timer_cmac_index);
+    hw_pdc_acknowledge(pdc_timer_cmac_index);
+
+    hw_pdc_set_pending(pdc_combo_m33_index);
+    hw_pdc_acknowledge(pdc_combo_m33_index);
 
     /* Enable Radio LDO */
     CRG_TOP->POWER_CTRL_REG |= CRG_TOP_POWER_CTRL_REG_LDO_RADIO_ENABLE_Msk;

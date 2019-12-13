@@ -46,7 +46,8 @@ extern uint32_t __zero_table_start__;
 extern uint32_t __zero_table_end__;
 extern uint8_t end;
 extern uint8_t __HeapLimit;
-
+uint32_t pdc_combo_m33_index = HW_PDC_INVALID_LUT_INDEX;
+uint32_t pdc_timer_cmac_index = HW_PDC_INVALID_LUT_INDEX;
 __RETAINED_UNINIT __UNUSED uint32_t black_orca_chip_version;
 __RETAINED_RW uint32_t SystemLPClock = dg_configXTAL32K_FREQ;   /*!< System Low Power Clock Frequency (LP Clock) */
 
@@ -314,13 +315,13 @@ static void configure_pdc(void)
 
 #if defined(CONFIG_USE_BLE) || (dg_configUSE_SYS_CHARGER) || (dg_configENABLE_DEBUGGER == 1)
         /* Set up PDC entry for CMAC2SYS IRQ or VBUS IRQ or debugger */
-        pdc_entry_index = hw_pdc_add_entry(HW_PDC_LUT_ENTRY_VAL(
+        pdc_combo_m33_index = hw_pdc_add_entry(HW_PDC_LUT_ENTRY_VAL(
                                                 HW_PDC_TRIG_SELECT_PERIPHERAL,
                                                 HW_PDC_PERIPH_TRIG_ID_COMBO,
                                                 HW_PDC_MASTER_CM33,
                                                 (dg_configENABLE_XTAL32M_ON_WAKEUP ? HW_PDC_LUT_ENTRY_EN_XTAL : 0)));
-        hw_pdc_set_pending(pdc_entry_index);
-        hw_pdc_acknowledge(pdc_entry_index);
+        hw_pdc_set_pending(pdc_combo_m33_index);
+        hw_pdc_acknowledge(pdc_combo_m33_index);
         no_syscpu_pdc_entries = false;
 #endif
 
@@ -329,14 +330,14 @@ static void configure_pdc(void)
          * Set up PDC entry for CMAC wakeup from MAC timer.
          * This entry is also used for the SYS2CMAC mailbox interrupt.
          */
-        pdc_entry_index = hw_pdc_add_entry(HW_PDC_LUT_ENTRY_VAL(
+        pdc_timer_cmac_index = hw_pdc_add_entry(HW_PDC_LUT_ENTRY_VAL(
                                                         HW_PDC_TRIG_SELECT_PERIPHERAL,
                                                         HW_PDC_PERIPH_TRIG_ID_MAC_TIMER,
                                                         HW_PDC_MASTER_CMAC,
                                                         HW_PDC_LUT_ENTRY_EN_XTAL));
 
-        hw_pdc_set_pending(pdc_entry_index);
-        hw_pdc_acknowledge(pdc_entry_index);
+        hw_pdc_set_pending(pdc_timer_cmac_index);
+        hw_pdc_acknowledge(pdc_timer_cmac_index);
 #endif
 
 //#if defined(OS_FREERTOS)

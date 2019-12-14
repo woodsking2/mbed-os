@@ -169,7 +169,7 @@ void Configurable_MAC::Impl::reset()
     //                          (0 << CRG_TOP_CLK_RADIO_REG_CMAC_CLK_ENABLE_Pos) | (0 << CRG_TOP_CLK_RADIO_REG_CMAC_DIV_Pos);
 }
 
-__attribute__((optimize("-O0"))) void Configurable_MAC::Impl::initialize()
+void Configurable_MAC::Impl::initialize()
 {
     reset();
     uint32_t cmac_addr_code = (uint32_t)&cmi_fw_dst_addr;

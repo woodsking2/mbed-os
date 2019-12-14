@@ -218,8 +218,10 @@ void PLL_Lock_Handler(void)
 /* carry out clock initialization sequence */
 static void nortos_clk_setup(void)
 {
-         hw_clk_enable_lpclk(LP_CLK_IS_RC32K);
-         hw_clk_set_lpclk(LP_CLK_IS_RC32K);
+        //  hw_clk_enable_lpclk(LP_CLK_IS_RC32K);
+        //  hw_clk_set_lpclk(LP_CLK_IS_RC32K);
+         hw_clk_enable_lpclk(LP_CLK_IS_XTAL32K);
+         hw_clk_set_lpclk(LP_CLK_IS_XTAL32K);
 
          NVIC_ClearPendingIRQ(XTAL32M_RDY_IRQn);
          NVIC_EnableIRQ(XTAL32M_RDY_IRQn);              // Activate XTAL32M Ready IRQ
@@ -402,6 +404,7 @@ void SystemInitPre(void)
                 DISABLE_CMAC_DEBUGGER;
         }
 
+
         /*
          * Bandgap has already been set by the bootloader.
          * Use fast clocks from now on.
@@ -469,6 +472,7 @@ void SystemInitPre(void)
         while (!REG_GETF(CRG_TOP, SYS_STAT_REG, PER_IS_DOWN));
         REG_SETF(CRG_TOP, PMU_CTRL_REG, COM_SLEEP, 1);
         while (!REG_GETF(CRG_TOP, SYS_STAT_REG, COM_IS_DOWN));
+        
         /*
          * PD_TIM is kept active so that XTAL and PLL registers
          * can be programmed properly in SystemInit.
@@ -477,6 +481,8 @@ void SystemInitPre(void)
         while (!REG_GETF(CRG_TOP, SYS_STAT_REG, TIM_IS_UP));
         GLOBAL_INT_RESTORE();
 
+        CRG_TOP->CLK_RADIO_REG = (0 << CRG_TOP_CLK_RADIO_REG_RFCU_ENABLE_Pos) | (1 << CRG_TOP_CLK_RADIO_REG_CMAC_SYNCH_RESET_Pos) | (0 << CRG_TOP_CLK_RADIO_REG_CMAC_CLK_SEL_Pos) |
+                             (0 << CRG_TOP_CLK_RADIO_REG_CMAC_CLK_ENABLE_Pos) | (0 << CRG_TOP_CLK_RADIO_REG_CMAC_DIV_Pos);                             
         /*
          * Keep CMAC core under reset
          */

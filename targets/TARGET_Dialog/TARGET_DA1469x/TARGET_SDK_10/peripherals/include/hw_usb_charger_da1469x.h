@@ -102,7 +102,7 @@ __STATIC_INLINE void hw_usb_charger_set_dp_high(void)
  */
 __STATIC_INLINE HW_USB_CHARGER_PRIMARY_CONN_TYPE hw_usb_charger_get_primary_detection_result(void)
 {
-        return REG_GETF(USB, USB_CHARGER_STAT_REG, USB_CHG_DET);
+        return (HW_USB_CHARGER_PRIMARY_CONN_TYPE)(REG_GETF(USB, USB_CHARGER_STAT_REG, USB_CHG_DET));
 }
 
 /**
@@ -115,7 +115,7 @@ __STATIC_INLINE HW_USB_CHARGER_PRIMARY_CONN_TYPE hw_usb_charger_get_primary_dete
  */
 __STATIC_INLINE HW_USB_CHARGER_SECONDARY_CONN_TYPE hw_usb_charger_get_secondary_detection_result(void)
 {
-        return REG_GETF(USB, USB_CHARGER_STAT_REG, USB_DCP_DET);
+        return (HW_USB_CHARGER_SECONDARY_CONN_TYPE)(REG_GETF(USB, USB_CHARGER_STAT_REG, USB_DCP_DET));
 }
 
 /**

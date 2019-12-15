@@ -783,7 +783,7 @@ __STATIC_INLINE void hw_charger_set_bat_temp_monitor_mode(HW_CHARGER_TBAT_MONITO
  */
 __STATIC_INLINE HW_CHARGER_TBAT_MONITOR_MODE hw_charger_get_bat_temp_monitor_mode(void)
 {
-        return REG_GETF(CHARGER, CHARGER_CTRL_REG, TBAT_MONITOR_MODE);
+        return (HW_CHARGER_TBAT_MONITOR_MODE)(REG_GETF(CHARGER, CHARGER_CTRL_REG, TBAT_MONITOR_MODE));
 }
 
 /**
@@ -1023,7 +1023,7 @@ __STATIC_INLINE  bool hw_charger_get_analog_circuitry_operating_mode(void)
  */
 __STATIC_INLINE  HW_CHARGER_JEITA_FSM_STATE hw_charger_get_jeita_fsm_state(void)
 {
-        return REG_GETF(CHARGER, CHARGER_STATUS_REG, CHARGER_JEITA_STATE);
+        return (HW_CHARGER_JEITA_FSM_STATE)(REG_GETF(CHARGER, CHARGER_STATUS_REG, CHARGER_JEITA_STATE));
 }
 
 /**
@@ -1034,7 +1034,7 @@ __STATIC_INLINE  HW_CHARGER_JEITA_FSM_STATE hw_charger_get_jeita_fsm_state(void)
  */
 __STATIC_INLINE  HW_CHARGER_MAIN_FSM_STATE hw_charger_get_main_fsm_state(void)
 {
-        return REG_GETF(CHARGER, CHARGER_STATUS_REG, CHARGER_STATE);
+        return (HW_CHARGER_MAIN_FSM_STATE)(REG_GETF(CHARGER, CHARGER_STATUS_REG, CHARGER_STATE));
 }
 
 /**
@@ -1059,7 +1059,7 @@ __STATIC_INLINE  bool hw_charger_is_die_temp_protection_limit_exceeded(void)
  */
 __STATIC_INLINE HW_CHARGER_JEITA_REGION hw_charger_get_jeita_operating_region(void)
 {
-        return REG_GETF(CHARGER, CHARGER_STATUS_REG, TBAT_STATUS);
+        return (HW_CHARGER_JEITA_REGION)(REG_GETF(CHARGER, CHARGER_STATUS_REG, TBAT_STATUS));
 }
 
 /**
@@ -1122,7 +1122,7 @@ __STATIC_INLINE void hw_charger_set_ovp_level(HW_CHARGER_V_LEVEL ovp_level)
  */
 __STATIC_INLINE HW_CHARGER_V_LEVEL hw_charger_get_ovp_level(void)
 {
-        return REG_GETF(CHARGER, CHARGER_VOLTAGE_PARAM_REG, V_OVP);
+        return (HW_CHARGER_V_LEVEL)(REG_GETF(CHARGER, CHARGER_VOLTAGE_PARAM_REG, V_OVP));
 }
 
 /**
@@ -1147,7 +1147,7 @@ __STATIC_INLINE void hw_charger_set_replenish_level(HW_CHARGER_V_LEVEL replenish
  */
 __STATIC_INLINE HW_CHARGER_V_LEVEL hw_charger_get_replenish_level(void)
 {
-        return REG_GETF(CHARGER, CHARGER_VOLTAGE_PARAM_REG, V_REPLENISH);
+        return (HW_CHARGER_V_LEVEL)(REG_GETF(CHARGER, CHARGER_VOLTAGE_PARAM_REG, V_REPLENISH));
 }
 
 /**
@@ -1173,7 +1173,7 @@ __STATIC_INLINE void hw_charger_set_precharged_voltage_threshold(HW_CHARGER_V_LE
  */
 __STATIC_INLINE HW_CHARGER_V_LEVEL hw_charger_get_precharged_voltage_threshold(void)
 {
-        return REG_GETF(CHARGER, CHARGER_VOLTAGE_PARAM_REG, V_PRECHARGE);
+        return (HW_CHARGER_V_LEVEL)(REG_GETF(CHARGER, CHARGER_VOLTAGE_PARAM_REG, V_PRECHARGE));
 }
 
 /**
@@ -1195,7 +1195,7 @@ __STATIC_INLINE void hw_charger_set_const_voltage_level(HW_CHARGER_V_LEVEL charg
  */
 __STATIC_INLINE HW_CHARGER_V_LEVEL hw_charger_get_const_voltage_level(void)
 {
-        return REG_GETF(CHARGER, CHARGER_VOLTAGE_PARAM_REG, V_CHARGE);
+        return (HW_CHARGER_V_LEVEL)(REG_GETF(CHARGER, CHARGER_VOLTAGE_PARAM_REG, V_CHARGE));
 }
 
 /**
@@ -1217,7 +1217,7 @@ __STATIC_INLINE void hw_charger_set_jeita_warm_const_voltage_level(HW_CHARGER_V_
  */
 __STATIC_INLINE HW_CHARGER_V_LEVEL hw_charger_get_jeita_warm_const_voltage_level(void)
 {
-        return REG_GETF(CHARGER, CHARGER_JEITA_V_CHARGE_REG, V_CHARGE_TWARM);
+        return (HW_CHARGER_V_LEVEL)(REG_GETF(CHARGER, CHARGER_JEITA_V_CHARGE_REG, V_CHARGE_TWARM));
 }
 
 /**
@@ -1239,7 +1239,7 @@ __STATIC_INLINE void hw_charger_set_jeita_cool_const_voltage_level(HW_CHARGER_V_
  */
 __STATIC_INLINE HW_CHARGER_V_LEVEL hw_charger_get_jeita_cool_const_voltage_level(void)
 {
-        return REG_GETF(CHARGER, CHARGER_JEITA_V_CHARGE_REG, V_CHARGE_TCOOL);
+        return (HW_CHARGER_V_LEVEL)(REG_GETF(CHARGER, CHARGER_JEITA_V_CHARGE_REG, V_CHARGE_TCOOL));
 }
 
 /**
@@ -1264,7 +1264,7 @@ __STATIC_INLINE void hw_charger_set_jeita_warm_precharged_voltage_threshold(HW_C
  */
 __STATIC_INLINE HW_CHARGER_V_LEVEL hw_charger_get_jeita_warm_precharged_voltage_threshold(void)
 {
-        return REG_GETF(CHARGER, CHARGER_JEITA_V_PRECHARGE_REG, V_PRECHARGE_TWARM);
+        return (HW_CHARGER_V_LEVEL)(REG_GETF(CHARGER, CHARGER_JEITA_V_PRECHARGE_REG, V_PRECHARGE_TWARM));
 }
 
 /**
@@ -1289,7 +1289,7 @@ __STATIC_INLINE void hw_charger_set_jeita_cool_precharged_voltage_threshold(HW_C
  */
 __STATIC_INLINE HW_CHARGER_V_LEVEL hw_charger_get_jeita_cool_precharged_voltage_threshold(void)
 {
-        return REG_GETF(CHARGER, CHARGER_JEITA_V_PRECHARGE_REG, V_PRECHARGE_TCOOL);
+        return (HW_CHARGER_V_LEVEL)(REG_GETF(CHARGER, CHARGER_JEITA_V_PRECHARGE_REG, V_PRECHARGE_TCOOL));
 }
 
 
@@ -1315,7 +1315,7 @@ __STATIC_INLINE void hw_charger_set_jeita_warm_replenish_level(HW_CHARGER_V_LEVE
  */
 __STATIC_INLINE HW_CHARGER_V_LEVEL hw_charger_get_jeita_warm_replenish_level(void)
 {
-        return REG_GETF(CHARGER, CHARGER_JEITA_V_REPLENISH_REG, V_REPLENISH_TWARM);
+        return (HW_CHARGER_V_LEVEL)(REG_GETF(CHARGER, CHARGER_JEITA_V_REPLENISH_REG, V_REPLENISH_TWARM));
 }
 
 /**
@@ -1340,7 +1340,7 @@ __STATIC_INLINE void hw_charger_set_jeita_cool_replenish_level(HW_CHARGER_V_LEVE
  */
 __STATIC_INLINE HW_CHARGER_V_LEVEL hw_charger_get_jeita_cool_replenish_level(void)
 {
-        return REG_GETF(CHARGER, CHARGER_JEITA_V_REPLENISH_REG, V_REPLENISH_TCOOL);
+        return (HW_CHARGER_V_LEVEL)(REG_GETF(CHARGER, CHARGER_JEITA_V_REPLENISH_REG, V_REPLENISH_TCOOL));
 }
 
 /**
@@ -1362,7 +1362,7 @@ __STATIC_INLINE void hw_charger_set_jeita_warm_ovp_level(HW_CHARGER_V_LEVEL ovp_
  */
 __STATIC_INLINE HW_CHARGER_V_LEVEL hw_charger_get_jeita_warm_ovp_level(void)
 {
-        return REG_GETF(CHARGER, CHARGER_JEITA_V_OVP_REG, V_OVP_TWARM);
+        return (HW_CHARGER_V_LEVEL)(REG_GETF(CHARGER, CHARGER_JEITA_V_OVP_REG, V_OVP_TWARM));
 }
 
 /**
@@ -1384,7 +1384,7 @@ __STATIC_INLINE void hw_charger_set_jeita_cool_ovp_level(HW_CHARGER_V_LEVEL ovp_
  */
 __STATIC_INLINE HW_CHARGER_V_LEVEL hw_charger_get_jeita_cool_ovp_level(void)
 {
-        return REG_GETF(CHARGER, CHARGER_JEITA_V_OVP_REG, V_OVP_TCOOL);
+        return (HW_CHARGER_V_LEVEL)(REG_GETF(CHARGER, CHARGER_JEITA_V_OVP_REG, V_OVP_TCOOL));
 }
 
 /************************************** Charger's current parameters ******************************/
@@ -1420,10 +1420,10 @@ __STATIC_INLINE void hw_charger_set_eoc_current_threshold(HW_CHARGER_I_EOC_PERCE
 __STATIC_INLINE HW_CHARGER_I_EOC_PERCENT_LEVEL hw_charger_get_eoc_current_threshold(void)
 {
         if (REG_GETF(CHARGER, CHARGER_CURRENT_PARAM_REG, I_EOC_DOUBLE_RANGE)) {
-                return (REG_GETF(CHARGER, CHARGER_CURRENT_PARAM_REG, I_END_OF_CHARGE) +
+                return (HW_CHARGER_I_EOC_PERCENT_LEVEL)(HW_CHARGER_I_EOC_PERCENT_LEVEL)(REG_GETF(CHARGER, CHARGER_CURRENT_PARAM_REG, I_END_OF_CHARGE) +
                         HW_CHARGER_I_EOC_PERCENT_LEVEL_8_8);
         } else {
-                return REG_GETF(CHARGER, CHARGER_CURRENT_PARAM_REG, I_END_OF_CHARGE);
+                return (HW_CHARGER_I_EOC_PERCENT_LEVEL)(REG_GETF(CHARGER, CHARGER_CURRENT_PARAM_REG, I_END_OF_CHARGE));
         }
 }
 
@@ -1446,7 +1446,7 @@ __STATIC_INLINE void hw_charger_set_precharge_const_current_level(HW_CHARGER_I_P
  */
 __STATIC_INLINE HW_CHARGER_I_PRECHARGE_LEVEL hw_charger_get_precharge_const_current_level(void)
 {
-        return REG_GETF(CHARGER, CHARGER_CURRENT_PARAM_REG, I_PRECHARGE);
+        return (HW_CHARGER_I_PRECHARGE_LEVEL)(REG_GETF(CHARGER, CHARGER_CURRENT_PARAM_REG, I_PRECHARGE));
 }
 
 /**
@@ -1468,7 +1468,7 @@ __STATIC_INLINE void hw_charger_set_const_current_level(HW_CHARGER_I_LEVEL charg
  */
 __STATIC_INLINE HW_CHARGER_I_LEVEL hw_charger_get_const_current_level(void)
 {
-        return REG_GETF(CHARGER, CHARGER_CURRENT_PARAM_REG, I_CHARGE);
+        return (HW_CHARGER_I_LEVEL)(REG_GETF(CHARGER, CHARGER_CURRENT_PARAM_REG, I_CHARGE));
 }
 
 
@@ -1491,7 +1491,7 @@ __STATIC_INLINE void hw_charger_set_jeita_warm_const_current_level(HW_CHARGER_I_
  */
 __STATIC_INLINE HW_CHARGER_I_LEVEL hw_charger_get_jeita_warm_const_current_level(void)
 {
-        return REG_GETF(CHARGER, CHARGER_JEITA_CURRENT_REG, I_CHARGE_TWARM);
+        return (HW_CHARGER_I_LEVEL)(REG_GETF(CHARGER, CHARGER_JEITA_CURRENT_REG, I_CHARGE_TWARM));
 }
 
 /**
@@ -1513,7 +1513,7 @@ __STATIC_INLINE void hw_charger_set_jeita_cool_const_current_level(HW_CHARGER_I_
  */
 __STATIC_INLINE HW_CHARGER_I_LEVEL hw_charger_get_jeita_cool_const_current_level(void)
 {
-        return REG_GETF(CHARGER, CHARGER_JEITA_CURRENT_REG, I_CHARGE_TCOOL);
+        return (HW_CHARGER_I_LEVEL)(REG_GETF(CHARGER, CHARGER_JEITA_CURRENT_REG, I_CHARGE_TCOOL));
 }
 
 /**
@@ -1536,7 +1536,7 @@ __STATIC_INLINE void hw_charger_set_jeita_warm_precharge_const_current_level(HW_
  */
 __STATIC_INLINE HW_CHARGER_I_PRECHARGE_LEVEL hw_charger_get_jeita_warm_precharge_const_current_level(void)
 {
-        return REG_GETF(CHARGER, CHARGER_JEITA_CURRENT_REG, I_PRECHARGE_TWARM);
+        return (HW_CHARGER_I_PRECHARGE_LEVEL)(REG_GETF(CHARGER, CHARGER_JEITA_CURRENT_REG, I_PRECHARGE_TWARM));
 }
 
 /**
@@ -1559,7 +1559,7 @@ __STATIC_INLINE void hw_charger_set_jeita_cool_precharge_const_current_level(HW_
  */
 __STATIC_INLINE HW_CHARGER_I_PRECHARGE_LEVEL hw_charger_get_jeita_cool_precharge_const_current_level(void)
 {
-        return REG_GETF(CHARGER, CHARGER_JEITA_CURRENT_REG, I_PRECHARGE_TCOOL);
+        return (HW_CHARGER_I_PRECHARGE_LEVEL)(REG_GETF(CHARGER, CHARGER_JEITA_CURRENT_REG, I_PRECHARGE_TCOOL));
 }
 
 #if (dg_configUSE_USB_ENUMERATION == 1)
@@ -1599,7 +1599,7 @@ __STATIC_INLINE void hw_charger_set_die_temp_protection_limit(HW_CHARGER_DIE_TEM
  */
 __STATIC_INLINE HW_CHARGER_DIE_TEMP_LIMIT hw_charger_get_die_temp_protection_limit(void)
 {
-        return REG_GETF(CHARGER, CHARGER_TEMPSET_PARAM_REG, TDIE_MAX);
+        return (HW_CHARGER_DIE_TEMP_LIMIT)(REG_GETF(CHARGER, CHARGER_TEMPSET_PARAM_REG, TDIE_MAX));
 }
 
 /**
@@ -1622,7 +1622,7 @@ __STATIC_INLINE void hw_charger_set_jeita_hot_temp_limit(HW_CHARGER_BAT_TEMP_LIM
  */
 __STATIC_INLINE HW_CHARGER_BAT_TEMP_LIMIT hw_charger_get_jeita_hot_temp_limit(void)
 {
-        return REG_GETF(CHARGER, CHARGER_TEMPSET_PARAM_REG, TBAT_HOT);
+        return (HW_CHARGER_BAT_TEMP_LIMIT)(REG_GETF(CHARGER, CHARGER_TEMPSET_PARAM_REG, TBAT_HOT));
 }
 
 /**
@@ -1645,7 +1645,7 @@ __STATIC_INLINE void hw_charger_set_jeita_warm_temp_limit(HW_CHARGER_BAT_TEMP_LI
  */
 __STATIC_INLINE HW_CHARGER_BAT_TEMP_LIMIT hw_charger_get_jeita_warm_temp_limit(void)
 {
-        return REG_GETF(CHARGER, CHARGER_TEMPSET_PARAM_REG, TBAT_WARM);
+        return (HW_CHARGER_BAT_TEMP_LIMIT)(REG_GETF(CHARGER, CHARGER_TEMPSET_PARAM_REG, TBAT_WARM));
 }
 
 /**
@@ -1668,7 +1668,7 @@ __STATIC_INLINE void hw_charger_set_jeita_cool_temp_limit(HW_CHARGER_BAT_TEMP_LI
  */
 __STATIC_INLINE HW_CHARGER_BAT_TEMP_LIMIT hw_charger_get_jeita_cool_temp_limit(void)
 {
-        return REG_GETF(CHARGER, CHARGER_TEMPSET_PARAM_REG, TBAT_COOL);
+        return (HW_CHARGER_BAT_TEMP_LIMIT)(REG_GETF(CHARGER, CHARGER_TEMPSET_PARAM_REG, TBAT_COOL));
 }
 
 /**
@@ -1691,7 +1691,7 @@ __STATIC_INLINE void hw_charger_set_jeita_cold_temp_limit(HW_CHARGER_BAT_TEMP_LI
  */
 __STATIC_INLINE HW_CHARGER_BAT_TEMP_LIMIT hw_charger_get_jeita_cold_temp_limit(void)
 {
-        return REG_GETF(CHARGER, CHARGER_TEMPSET_PARAM_REG, TBAT_COLD);
+        return (HW_CHARGER_BAT_TEMP_LIMIT)(REG_GETF(CHARGER, CHARGER_TEMPSET_PARAM_REG, TBAT_COLD));
 }
 
 /************************************** Charger's fine tune parameters ****************************/
@@ -1930,7 +1930,7 @@ __STATIC_INLINE uint32_t hw_charger_get_max_total_charging_timeout(void)
  */
 __STATIC_INLINE HW_CHARGER_FSM_IRQ_STAT_OK hw_charger_get_ok_irq_status(void)
 {
-        return CHARGER->CHARGER_STATE_IRQ_STATUS_REG;
+        return (HW_CHARGER_FSM_IRQ_STAT_OK)(CHARGER->CHARGER_STATE_IRQ_STATUS_REG);
 }
 
 /**
@@ -1941,7 +1941,7 @@ __STATIC_INLINE HW_CHARGER_FSM_IRQ_STAT_OK hw_charger_get_ok_irq_status(void)
  */
 __STATIC_INLINE HW_CHARGER_FSM_IRQ_STAT_NOK hw_charger_get_nok_irq_status(void)
 {
-        return CHARGER->CHARGER_ERROR_IRQ_STATUS_REG;
+        return (HW_CHARGER_FSM_IRQ_STAT_NOK)(CHARGER->CHARGER_ERROR_IRQ_STATUS_REG);
 }
 
 /**
@@ -2010,7 +2010,7 @@ __STATIC_INLINE void hw_charger_set_ok_irq_mask(HW_CHARGER_FSM_IRQ_OK value)
  */
 __STATIC_INLINE HW_CHARGER_FSM_IRQ_OK hw_charger_get_ok_irq_mask(void)
 {
-        return CHARGER->CHARGER_STATE_IRQ_MASK_REG;
+        return (HW_CHARGER_FSM_IRQ_OK)(CHARGER->CHARGER_STATE_IRQ_MASK_REG);
 }
 
 /**
@@ -2034,7 +2034,7 @@ __STATIC_INLINE void hw_charger_set_nok_irq_mask(HW_CHARGER_FSM_IRQ_NOK value)
  */
 __STATIC_INLINE HW_CHARGER_FSM_IRQ_NOK hw_charger_get_nok_irq_mask(void)
 {
-        return CHARGER->CHARGER_ERROR_IRQ_MASK_REG;
+        return (HW_CHARGER_FSM_IRQ_NOK)(CHARGER->CHARGER_ERROR_IRQ_MASK_REG);
 }
 
 /**

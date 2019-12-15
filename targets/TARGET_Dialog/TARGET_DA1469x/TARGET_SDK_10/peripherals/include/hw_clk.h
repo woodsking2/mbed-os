@@ -75,7 +75,7 @@ typedef enum apbdiv_type {
  */
 __STATIC_FORCEINLINE ahb_div_t hw_clk_get_hclk_div(void)
 {
-        return REG_GETF(CRG_TOP, CLK_AMBA_REG, HCLK_DIV);
+        return (ahb_div_t)(REG_GETF(CRG_TOP, CLK_AMBA_REG, HCLK_DIV));
 }
 
 /**
@@ -85,7 +85,7 @@ __STATIC_FORCEINLINE ahb_div_t hw_clk_get_hclk_div(void)
  */
 __STATIC_FORCEINLINE apb_div_t hw_clk_get_pclk_div(void)
 {
-        return REG_GETF(CRG_TOP, CLK_AMBA_REG, PCLK_DIV);
+        return (apb_div_t)(REG_GETF(CRG_TOP, CLK_AMBA_REG, PCLK_DIV));
 }
 
         #include "hw_clk_da1469x.h"
@@ -185,10 +185,10 @@ __STATIC_INLINE bool hw_clk_lpclk_is(lp_clk_is_t clk)
  */
 __STATIC_INLINE lp_clk_is_t hw_clk_get_lpclk(void)
 {
-        lp_clk_is_t lp_clk;
+        int lp_clk;
         for (lp_clk = 0; lp_clk < LP_CLK_IS_INVALID; lp_clk++) {
-                if (hw_clk_lpclk_is(lp_clk)) {
-                        return lp_clk;
+                if (hw_clk_lpclk_is((lp_clk_is_t)lp_clk)) {
+                        return (lp_clk_is_t)lp_clk;
                 }
         }
         ASSERT_WARNING(0);

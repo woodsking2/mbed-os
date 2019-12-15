@@ -56,6 +56,7 @@ class Interrupt_instance::Impl
     void set_hw_interrupt(gpio_irq_event event);
     void set_hw_interrupt(bool pin_state);
     bool read_pin_state();
+    bool m_set_state;
 
   public:
     Impl(PinName pin, gpio_irq_handler handler, uint32_t id);
@@ -73,10 +74,10 @@ bool Interrupt_instance::Impl::read_pin_state()
 void Interrupt_instance::Impl::triggered()
 {
     auto pin_state = read_pin_state();
-    debug("%d triggered %d\n", static_cast<int>(m_pin), pin_state);
+    // debug("%d triggered %d\n", static_cast<int>(m_pin), pin_state);
     auto event_pin_state = gpio_irq_event_to_pin_state(m_event);
     set_hw_interrupt(!pin_state);
-    if (pin_state == event_pin_state)
+    if (event_pin_state == m_set_state)
     {
         m_handler(m_id, m_event);
     }
@@ -84,6 +85,7 @@ void Interrupt_instance::Impl::triggered()
 void Interrupt_instance::Impl::set_hw_interrupt(bool pin_state)
 {
     auto hw_event = pin_state_to_hw_event(pin_state);
+    m_set_state = pin_state;
     hw_wkup_gpio_configure_pin(PinName_to_port(m_pin), PinName_to_pin(m_pin), true, hw_event);
 }
 void Interrupt_instance::Impl::set_hw_interrupt(gpio_irq_event event)

@@ -2,6 +2,7 @@
 #include "gsl/gsl"
 #include "PlatformMutex.h"
 #include <array>
+#include "mbed_debug.h"
 using namespace std;
 using namespace gsl;
 class Spi_manager::Impl
@@ -27,6 +28,7 @@ Spi_manager::Type Spi_manager::Impl::acquire()
     {
         if (!m_acquired.at(i))
         {
+            debug("spi %d acquire\n", i);
             m_acquired.at(i) = true;
             return static_cast<Spi_manager::Type>(i);
         }

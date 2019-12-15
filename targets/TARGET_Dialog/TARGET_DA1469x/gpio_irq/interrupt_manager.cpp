@@ -40,7 +40,7 @@ void Interrupt_manager::Impl::interrupt()
 {
     m_mutex.lock();
     auto _ = finally([&]() { m_mutex.unlock(); });
-    debug("Interrupt_manager::Impl::interrupt\n");
+    // debug("Interrupt_manager::Impl::interrupt\n");
     uint32_t status{};
     PinName pin{};
     Interrupt_instance *instance{};

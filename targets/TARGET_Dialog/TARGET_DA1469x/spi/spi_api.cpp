@@ -333,6 +333,15 @@ Spi_instance::~Spi_instance()
     hw_sys_pd_com_disable();
 }
 } // namespace
+
+SPIName spi_get_peripheral_name(PinName mosi, PinName miso, PinName mclk)
+{
+    if (mclk == P0_21)
+    {
+        return SPI_1;
+    }
+    return SPI_2;
+}
 /** Initialize the SPI peripheral
  *
  * Configures the pins used by SPI, sets a default format and frequency, and enables the peripheral

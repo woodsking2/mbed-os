@@ -984,7 +984,7 @@ __STATIC_FORCEINLINE void hw_qspi_set_min_cs_high(HW_QSPIC_ID id, uint8_t clock_
 __STATIC_FORCEINLINE HW_QSPI_ERS hw_qspi_get_erase_status(HW_QSPIC_ID id)
 {
         id->QSPIC_CHCKERASE_REG = 0;
-        return HW_QSPIC_REG_GETF(id, ERASECTRL, ERS_STATE);
+        return (HW_QSPI_ERS)(HW_QSPIC_REG_GETF(id, ERASECTRL, ERS_STATE));
 }
 
 /**
@@ -1158,15 +1158,15 @@ __STATIC_FORCEINLINE void hw_qspi_set_div(HW_QSPIC_ID id, HW_QSPI_DIV div)
 __STATIC_FORCEINLINE HW_QSPI_DIV hw_qspi_get_div(HW_QSPIC_ID id)
 {
         if (id == HW_QSPIC) {
-                return REG_GETF(CRG_TOP, CLK_AMBA_REG, QSPI_DIV);
+                return (HW_QSPI_DIV)(REG_GETF(CRG_TOP, CLK_AMBA_REG, QSPI_DIV));
 #if dg_configUSE_HW_QSPI2
         } else if (id == HW_QSPIC2) {
-                return REG_GETF(CRG_TOP, CLK_AMBA_REG, QSPI2_DIV);
+                return (HW_QSPI_DIV)(REG_GETF(CRG_TOP, CLK_AMBA_REG, QSPI2_DIV));
 #endif
         } else {
                 ASSERT_WARNING(0);
         }
-        return 0;
+        return HW_QSPI_DIV_1;
 }
 
 /**

@@ -110,7 +110,7 @@ void cmac2sys_isr(void)
     if (*(volatile uint32_t *)0x40002000 & 0x1c00)
     {
         /* XXX CMAC is in error state, need to recover */
-        assert(0);
+        Ensures(false);
     }
 
     if (cmac_mbox_rx->flags & CMAC_MBOX_F_RESET)

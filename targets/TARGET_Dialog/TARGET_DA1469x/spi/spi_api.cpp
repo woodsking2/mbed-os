@@ -120,7 +120,7 @@ HW_SPI_FREQ Spi_instance::frequency_convert(int frequency)
     {
         return HW_SPI_FREQ_DIV_4;
     }
-    else if (frequency >= 8000000)
+    else if (frequency >= 4000000)
     {
         return HW_SPI_FREQ_DIV_8;
     }

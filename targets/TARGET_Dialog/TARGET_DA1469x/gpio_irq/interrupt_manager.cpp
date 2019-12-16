@@ -1,7 +1,7 @@
 #include "interrupt_manager.h"
 #include "mbed.h"
 #include "gsl/gsl"
-#include "Main_thread.h"
+// #include "Main_thread.h"
 #include <array>
 #include "PlatformMutex.h"
 extern "C"
@@ -27,6 +27,7 @@ class Interrupt_manager::Impl
   private:
     PlatformMutex m_mutex;
     array<Interrupt_instance *, PinCount> m_instances;
+    EventQueue *m_high_prio_event;
     void enable_interrupt();
     void interrupt();
 
@@ -66,7 +67,7 @@ void Interrupt_manager::Impl::interrupt()
 void Interrupt_manager::Impl::interrupt_from_isr()
 {
     hw_wkup_unregister_interrupts();
-    Main_thread::get_instance().queue().call(callback(this, &Interrupt_manager::Impl::interrupt));
+    m_high_prio_event->call(callback(this, &Interrupt_manager::Impl::interrupt));
 }
 void Interrupt_manager::Impl::enable_interrupt()
 {
@@ -75,7 +76,7 @@ void Interrupt_manager::Impl::enable_interrupt()
     hw_wkup_register_gpio_p0_interrupt(interrupt_handler, PRIORITY_15);
     hw_wkup_register_gpio_p1_interrupt(interrupt_handler, PRIORITY_15);
 }
-Interrupt_manager::Impl::Impl()
+Interrupt_manager::Impl::Impl() : m_high_prio_event(mbed_highprio_event_queue())
 {
     hw_wkup_init(0);
     enable_interrupt();

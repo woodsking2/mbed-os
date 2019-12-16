@@ -351,13 +351,18 @@ Wrong_SP:
                 * and reset WATCHDOG_CTRL_REG[NMI_RST]
                 * so that watchdog can be frozen.
                 */
+                /*
+                #error 123
                 ldr     r0, =WATCHDOG_CTRL_REG
                 ldr     r1, =WATCHDOG_CTRL_REG_WDOG_FREEZE_EN_MSK
                 str     r1, [r0]
+                */
                 /* Freeze WDog at all times */
+                /*
                 ldr     r0, =SET_FREEZE_REG
                 ldr     r1, =SET_FREEZE_REG_FRZ_SYS_WDOG_MSK
                 strh    r1, [r0, #0]
+                */
                 /* Enable debugger at all times */
                 ldr     r4, =SYS_CTRL_REG
                 ldrh    r0, [r4, #0]

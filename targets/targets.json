@@ -9701,6 +9701,7 @@
             "dg_config_RETAINED_UNINIT_SECTION_SIZE=128",
             "dg_configFLASH_AUTODETECT=1",
             "dg_configUSE_HW_CHARGER=1",
+            "dg_configUSE_HW_CPM=1",
             "MBED_MPU_CUSTOM",
             "MBED_TICKLESS",
             "CONFIG_USE_BLE",            

@@ -36,33 +36,30 @@ namespace
 {
 struct cmac_config
 {
-    uint8_t bdaddr[6]; /* Device address */
+    uint8_t ble_bd_address[6];    // The BLE Device Address
+    uint8_t rf_calibration_delay; // The maximum delay allowed for RF calibration (in multiples of 100 msec)
+    uint8_t lp_clock_freq;        // 0 (32768Hz) and 1 (32000Hz) are supported settings, Default: 32768Hz
+    uint16_t lp_clock_drift;      // Device SCA setting, Default: 500
 
-    uint8_t rf_calibration_delay;
-
-    uint8_t lp_clock_freq; /* Sleep clock frequency (0 = 32768Hz, 1 = 32000Hz) */
-    uint16_t lp_clock_sca; /* Sleep clock accuracy [ppm] */
-
-    uint16_t rx_buf_len; /* RX buffer size */
-    uint16_t tx_buf_len; /* TX buffer size */
-    bool initial_length_req;
-
-    /* Channel assessment algorithm settings */
-    uint16_t chan_assess_itvl;
-    uint8_t chan_assess_itvl_mult;
-    int8_t chan_assess_min_rssi;
-    uint16_t chan_assess_pkt_num;
-    uint16_t chan_assess_bad_pkt_num;
-
-    /* Calibration settings */
-    uint8_t system_tcs_length;
-    uint8_t synth_tcs_length;
-    uint8_t rfcu_tcs_length;
-
-    uint8_t default_tx_power;   /* Default TX power for connection/advertising */
-    bool filter_dup_ov_discard; /* Discard unknown devices when filter buffer is full */
-    bool use_hp_1m;
-    bool use_hp_2m;
+    uint16_t ble_rx_buffer_size;         // BLE Rx data buffer size, Default: 262 bytes
+    uint16_t ble_tx_buffer_size;         // BLE Tx data buffer size, Defalut: 262 bytes
+    bool ble_length_exchange_needed;     // Flag to control Length Exchange, Default: true
+    uint16_t ble_chnl_assess_timer;      // Channel Assessment Timer duration (5s -
+                                         // Multiple of 10ms), Default: 500, Private
+    uint8_t ble_chnl_reassess_timer;     // Channel Reassessment Timer duration (Multiple of
+                                         // Channel Assessment Timer duration), Default: 8, Private
+    int8_t ble_chnl_assess_min_rssi;     // BLE Chnl Assess alg, Min RSSI, Default: -60 (dBm)
+    uint16_t ble_chnl_assess_nb_pkt;     // # of packets to receive for statistics, Default: 20, Private
+    uint16_t ble_chnl_assess_nb_bad_pkt; // # of bad packets needed to remove a channel, Default: 10, Private
+    uint8_t system_tcs_length;           // Number of valid entries in the table
+    uint8_t synth_tcs_length;            // Number of valid entries in the table
+    uint8_t rfcu_tcs_length;             // Number of valid entries in the table
+    uint8_t initial_tx_power_lvl;        // The initial Tx power level used in the ADV and Data channels
+    bool ble_dup_filter_found;           // Unknown devices are treated as "found" (be in the
+                                         // duplicate filter buffer) when the buffer is full,
+                                         // if true, Default: true, Private
+    bool use_high_performace_1m;         // Enable 1M High Performance mode
+    bool use_high_performace_2m;         // Enable 2M High Performance mode
 };
 
 struct cmac_mbox
@@ -177,7 +174,7 @@ void Configurable_MAC::Impl::initialize()
     hw_pdc_acknowledge(pdc_timer_cmac_index);
 
     auto pdc_combo_m33_index = hw_find_pdc_entry(HW_PDC_TRIG_SELECT_PERIPHERAL, HW_PDC_PERIPH_TRIG_ID_COMBO, HW_PDC_MASTER_CM33,
-                                 (dg_configENABLE_XTAL32M_ON_WAKEUP ? HW_PDC_LUT_ENTRY_EN_XTAL : static_cast<HW_PDC_LUT_ENTRY_EN>(0)));
+                                                 (dg_configENABLE_XTAL32M_ON_WAKEUP ? HW_PDC_LUT_ENTRY_EN_XTAL : static_cast<HW_PDC_LUT_ENTRY_EN>(0)));
     hw_pdc_set_pending(pdc_combo_m33_index);
     hw_pdc_acknowledge(pdc_combo_m33_index);
 
@@ -207,24 +204,44 @@ void Configurable_MAC::Impl::initialize()
 
     /* Update CMAC configuration */
     cmac_config->lp_clock_freq = 0;
-    cmac_config->lp_clock_sca = 50;
-    cmac_config->rx_buf_len = 251 + 11;
-    cmac_config->tx_buf_len = 251 + 11;
-    cmac_config->initial_length_req = 0;
+    cmac_config->lp_clock_drift = 500;
+
+    cmac_config->ble_rx_buffer_size = 251 + 11;
+    cmac_config->ble_tx_buffer_size = 251 + 11;
+    cmac_config->ble_length_exchange_needed = true;
+
+    cmac_config->ble_chnl_assess_timer = 500;
+
+    cmac_config->ble_chnl_reassess_timer = 8;
+
+    cmac_config->ble_chnl_assess_min_rssi = -60;
+    cmac_config->ble_chnl_assess_nb_pkt = 20;
+    cmac_config->ble_chnl_assess_nb_bad_pkt = 10;
     cmac_config->system_tcs_length = 0;
     cmac_config->synth_tcs_length = 0;
     cmac_config->rfcu_tcs_length = 0;
-    cmac_config->default_tx_power = 4;
+    // #if (dg_configBLE_INITIAL_TX_POWER == 6)
+    //         cmac_config_table_ptr->initial_tx_power_lvl       = 0xF;
+    // #elif (dg_configBLE_INITIAL_TX_POWER == 0)
+    //         cmac_config_table_ptr->initial_tx_power_lvl       = 0x8;
+    // #endif
+    cmac_config->initial_tx_power_lvl = 0x8;
+    cmac_config->ble_dup_filter_found = true;
+    cmac_config->use_high_performace_1m = true;
+    cmac_config->use_high_performace_2m = true;
+
     cmac_config_dyn->enable_sleep = true;
 
     /* Release CMAC from reset */
     CRG_TOP->CLK_RADIO_REG &= ~CRG_TOP_CLK_RADIO_REG_CMAC_SYNCH_RESET_Msk;
 
-    /* Wait for CMAC to update registers */
     while (MEMCTRL->CMI_DATA_BASE_REG == cmac_addr_data)
-        ;
+    {
+        /* Wait for CMAC to update registers */
+    }
     while (MEMCTRL->CMI_SHARED_BASE_REG != (MEMCTRL->CMI_END_REG & 0xfffffc00))
-        ;
+    {
+    }
 
     /* Initialize mailboxes and sync with CMAC */
     cmac_mbox_tx->flags = CMAC_MBOX_F_RESET;
@@ -232,7 +249,8 @@ void Configurable_MAC::Impl::initialize()
     cmac_mbox_tx->rd_off = 0;
     cmac_mbox_tx->magic = 0xa55a;
     while (cmac_mbox_rx->magic != 0xa55a)
-        ;
+    {
+    }
 
     NVIC_SetVector(CMAC2SYS_IRQn, (uint32_t)cmac2sys_isr);
     NVIC_SetPriority(CMAC2SYS_IRQn, 0);

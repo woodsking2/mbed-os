@@ -24,6 +24,7 @@
 #include "qspi_automode.h"
 // #include "sys_tcs.h"
 // #include "sys_trng.h"
+#include "low_level_clock_da1469x.h"
 #define DEFAULT_CHARGER_TEST_CTRL_REG   0x0F81
 
 #if dg_configUSE_CLOCK_MGR
@@ -163,65 +164,65 @@ static bool is_compatible_chip_version(void)
 
 #if dg_configUSE_CLOCK_MGR == 0
 
-void XTAL32M_Ready_Handler(void)
-{
-    ASSERT_WARNING(hw_clk_is_xtalm_started());
-    if (dg_configXTAL32M_SETTLE_TIME_IN_USEC == 0)
-    {
-        hw_clk_xtalm_update_rdy_cnt();
-    }
-}
+// void XTAL32M_Ready_Handler(void)
+// {
+//     ASSERT_WARNING(hw_clk_is_xtalm_started());
+//     if (dg_configXTAL32M_SETTLE_TIME_IN_USEC == 0)
+//     {
+//         hw_clk_xtalm_update_rdy_cnt();
+//     }
+// }
 
-void PLL_Lock_Handler(void)
-{
-    ASSERT_WARNING(REG_GETF(CRG_XTAL, PLL_SYS_STATUS_REG, PLL_LOCK_FINE));
-}
+// void PLL_Lock_Handler(void)
+// {
+//     ASSERT_WARNING(REG_GETF(CRG_XTAL, PLL_SYS_STATUS_REG, PLL_LOCK_FINE));
+// }
 
 /* carry out clock initialization sequence */
-static void nortos_clk_setup(void)
-{
-    //  hw_clk_enable_lpclk(LP_CLK_IS_RC32K);
-    //  hw_clk_set_lpclk(LP_CLK_IS_RC32K);
-    hw_clk_enable_lpclk(LP_CLK_IS_XTAL32K);
-    hw_clk_set_lpclk(LP_CLK_IS_XTAL32K);
+// static void nortos_clk_setup(void)
+// {
+//     //  hw_clk_enable_lpclk(LP_CLK_IS_RC32K);
+//     //  hw_clk_set_lpclk(LP_CLK_IS_RC32K);
+//     hw_clk_enable_lpclk(LP_CLK_IS_XTAL32K);
+//     hw_clk_set_lpclk(LP_CLK_IS_XTAL32K);
 
-    NVIC_ClearPendingIRQ(XTAL32M_RDY_IRQn);
-    NVIC_EnableIRQ(XTAL32M_RDY_IRQn); // Activate XTAL32M Ready IRQ
+//     NVIC_ClearPendingIRQ(XTAL32M_RDY_IRQn);
+//     NVIC_EnableIRQ(XTAL32M_RDY_IRQn); // Activate XTAL32M Ready IRQ
 
-    hw_clk_enable_sysclk(SYS_CLK_IS_XTAL32M); // Enable XTAL32M
-#if (dg_configENABLE_DA1469x_AA_SUPPORT)
-    /* Workaround for bug2522A_075: XTAL32M does not start if V14 is supplied by DCDC */
-    if (hw_clk_is_enabled_sysclk(SYS_CLK_IS_XTAL32M) == false)
-    {
-        /* If XTAL32M is still in IDLE state, then the 1V4 rail may be powered by the
-         * DC/DC converter. In this case XTAL32M cannot be enabled if system has been
-         * woken-up by the PDC.
-         *
-         * Toggle 1V4 rail DC/DC converter supply to allow XTAL32M to start.
-         */
-        uint32_t prev_value = DCDC->DCDC_V14_REG;
-        uint32_t value = prev_value;
-        REG_CLR_FIELD(DCDC, DCDC_V14_REG, DCDC_V14_ENABLE_HV, value);
-        REG_CLR_FIELD(DCDC, DCDC_V14_REG, DCDC_V14_ENABLE_LV, value);
-        DCDC->DCDC_V14_REG = value; // Disable 1V4 rail supply
-        // Wait for LDO to be OK
-        while (REG_GETF(CRG_TOP, ANA_STATUS_REG, LDO_RADIO_OK) == 0)
-            ;
-        DCDC->DCDC_V14_REG = prev_value; // Restore previous value
+//     hw_clk_enable_sysclk(SYS_CLK_IS_XTAL32M); // Enable XTAL32M
+// #if (dg_configENABLE_DA1469x_AA_SUPPORT)
+//     /* Workaround for bug2522A_075: XTAL32M does not start if V14 is supplied by DCDC */
+//     if (hw_clk_is_enabled_sysclk(SYS_CLK_IS_XTAL32M) == false)
+//     {
+//         /* If XTAL32M is still in IDLE state, then the 1V4 rail may be powered by the
+//          * DC/DC converter. In this case XTAL32M cannot be enabled if system has been
+//          * woken-up by the PDC.
+//          *
+//          * Toggle 1V4 rail DC/DC converter supply to allow XTAL32M to start.
+//          */
+//         uint32_t prev_value = DCDC->DCDC_V14_REG;
+//         uint32_t value = prev_value;
+//         REG_CLR_FIELD(DCDC, DCDC_V14_REG, DCDC_V14_ENABLE_HV, value);
+//         REG_CLR_FIELD(DCDC, DCDC_V14_REG, DCDC_V14_ENABLE_LV, value);
+//         DCDC->DCDC_V14_REG = value; // Disable 1V4 rail supply
+//         // Wait for LDO to be OK
+//         while (REG_GETF(CRG_TOP, ANA_STATUS_REG, LDO_RADIO_OK) == 0)
+//             ;
+//         DCDC->DCDC_V14_REG = prev_value; // Restore previous value
 
-        // Check if XTAL32M is started
-        ASSERT_WARNING(hw_clk_is_enabled_sysclk(SYS_CLK_IS_XTAL32M));
-    }
-#endif
-    /* Wait for XTAL32M to settle */
-    while (!hw_clk_is_xtalm_started())
-        ;
+//         // Check if XTAL32M is started
+//         ASSERT_WARNING(hw_clk_is_enabled_sysclk(SYS_CLK_IS_XTAL32M));
+//     }
+// #endif
+//     /* Wait for XTAL32M to settle */
+//     while (!hw_clk_is_xtalm_started())
+//         ;
 
-    hw_clk_set_sysclk(SYS_CLK_IS_XTAL32M);
+//     hw_clk_set_sysclk(SYS_CLK_IS_XTAL32M);
 
-    NVIC_ClearPendingIRQ(PLL_LOCK_IRQn);
-    NVIC_EnableIRQ(PLL_LOCK_IRQn); // Activate PLL lock IRQ
-}
+//     NVIC_ClearPendingIRQ(PLL_LOCK_IRQn);
+//     NVIC_EnableIRQ(PLL_LOCK_IRQn); // Activate PLL lock IRQ
+// }
 
 #endif /* OS_BAREMETAL */
 
@@ -603,43 +604,46 @@ void da1469x_SystemInit(void)
     hw_sys_set_preferred_values(HW_PD_SYS);
     hw_sys_set_preferred_values(HW_PD_TMR);
 
-#if dg_configUSE_CLOCK_MGR
-    cm_clk_init_low_level_internal();
-#else
-    hw_clk_xtalm_configure();
-    if (dg_configXTAL32M_SETTLE_TIME_IN_USEC != 0)
-    {
-        hw_clk_set_xtalm_settling_time(XTAL32M_USEC_TO_256K_CYCLES(dg_configXTAL32M_SETTLE_TIME_IN_USEC) / 8, false);
-    }
-#endif
+// #if dg_configUSE_CLOCK_MGR
+//     cm_clk_init_low_level_internal();
+// #else
+//     hw_clk_xtalm_configure();
+//     if (dg_configXTAL32M_SETTLE_TIME_IN_USEC != 0)
+//     {
+//         hw_clk_set_xtalm_settling_time(XTAL32M_USEC_TO_256K_CYCLES(dg_configXTAL32M_SETTLE_TIME_IN_USEC) / 8, false);
+//     }
+// #endif
+    low_level_clock_init_initialize();
 
     configure_pdc();
 
-#if dg_configUSE_CLOCK_MGR
-    // Always enable the XTAL32M
-    cm_enable_xtalm();
-    while (!cm_poll_xtalm_ready())
-        ;                                  // Wait for XTAL32M to settle
-    hw_clk_set_sysclk(SYS_CLK_IS_XTAL32M); // Set XTAL32M as sys_clk
+    low_level_clock_init_set_up();
+//     nortos_clk_setup();
+// #if dg_configUSE_CLOCK_MGR
+//     // Always enable the XTAL32M
+//     cm_enable_xtalm();
+//     while (!cm_poll_xtalm_ready())
+//         ;                                  // Wait for XTAL32M to settle
+//     hw_clk_set_sysclk(SYS_CLK_IS_XTAL32M); // Set XTAL32M as sys_clk
 
-#if (dg_configENABLE_DA1469x_AA_SUPPORT)
-    /* Workaround for bug2522A_050: SW needed to overrule the XTAL calibration state machine */
-    hw_clk_perform_init_rcosc_calibration(); // Perform initial RCOSC calibration
-#endif
+// #if (dg_configENABLE_DA1469x_AA_SUPPORT)
+//     /* Workaround for bug2522A_050: SW needed to overrule the XTAL calibration state machine */
+//     hw_clk_perform_init_rcosc_calibration(); // Perform initial RCOSC calibration
+// #endif
 
-#if ((dg_configLP_CLK_SOURCE == LP_CLK_IS_ANALOG) && (dg_configUSE_LP_CLK == LP_CLK_RCX))
-    /*
-     * Note: If the LP clock is the RCX then we have to wait for the XTAL32M to settle
-     *       since we need to estimate the frequency of the RCX before continuing
-     *       (calibration procedure).
-     */
-    cm_rcx_calibrate();
-    hw_clk_set_lpclk(LP_CLK_IS_RCX); // Set RCX as the LP clock
-#endif
-#else
-    /* perform clock initialization here, as there is no clock manager to do it later for us */
-    nortos_clk_setup();
-#endif
+// #if ((dg_configLP_CLK_SOURCE == LP_CLK_IS_ANALOG) && (dg_configUSE_LP_CLK == LP_CLK_RCX))
+//     /*
+//      * Note: If the LP clock is the RCX then we have to wait for the XTAL32M to settle
+//      *       since we need to estimate the frequency of the RCX before continuing
+//      *       (calibration procedure).
+//      */
+//     cm_rcx_calibrate();
+//     hw_clk_set_lpclk(LP_CLK_IS_RCX); // Set RCX as the LP clock
+// #endif
+// #else
+//     /* perform clock initialization here, as there is no clock manager to do it later for us */
+//     nortos_clk_setup();
+// #endif
 
     /* Calculate pll_min_current value
      * Apply value to PLL_SYS_CTRL3_REG
@@ -667,6 +671,8 @@ void da1469x_SystemInit(void)
 #else
     hw_bod_deactivate();
 #endif
+    hw_sys_setup_retmem(); 
+    hw_sys_set_cache_retained();
 }
 
 uint32_t black_orca_phy_addr(uint32_t addr)

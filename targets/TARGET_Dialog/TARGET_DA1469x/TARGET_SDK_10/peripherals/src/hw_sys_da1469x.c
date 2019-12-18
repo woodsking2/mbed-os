@@ -29,7 +29,8 @@
 #include "hw_pd.h"
 #include "hw_sys.h"
 #include "hw_gpio.h"
-#include "sys_tcs_da1469x.h"
+// #include "sys_tcs_da1469x.h"
+#define DEFAULT_PMU_TRIM_REG            0x7700
 
 #define SW_CURSOR_GPIO                  *(SW_CURSOR_PORT == 0 ? \
                                                 (SW_CURSOR_PIN == 0 ? &(GPIO->P0_00_MODE_REG) : \
@@ -436,10 +437,10 @@ void hw_sys_apply_default_values(void)
 
         bool is_reg_trimmed[NUM_OF_REG_ADDR_IN_CS] = {false};
 
-        // Check for plain register entries
-        if (sys_tcs_reg_pairs_in_cs(reg_in_cs, NUM_OF_REG_ADDR_IN_CS, is_reg_trimmed)) {
-                return;
-        }
+        // // Check for plain register entries
+        // if (sys_tcs_reg_pairs_in_cs(reg_in_cs, NUM_OF_REG_ADDR_IN_CS, is_reg_trimmed)) {
+        //         return;
+        // }
 
         if (!is_reg_trimmed[0]) {
                 REG_SETF(CRG_XTAL, CLK_FREQ_TRIM_REG, XTAL32M_TRIM, dg_configDEFAULT_CLK_FREQ_TRIM_REG__XTAL32M_TRIM__VALUE);
@@ -574,7 +575,7 @@ void hw_sys_pll_calculate_min_current(void)
         uint8_t size = 0;
         uint32_t reg = (uint32_t)&CRG_XTAL->PLL_SYS_CTRL3_REG;
 
-        sys_tcs_get_reg_pairs(SYS_TCS_GROUP_PD_TMR, &values, &size);
+        // sys_tcs_get_reg_pairs(SYS_TCS_GROUP_PD_TMR, &values, &size);
 
         while (size > 0) {
                 /* If PLL_SYS_CTRL3_REG entry exists in OTP it has already been applied

@@ -176,6 +176,8 @@ void Configurable_MAC::Impl::initialize()
     hw_pdc_set_pending(pdc_timer_cmac_index);
     hw_pdc_acknowledge(pdc_timer_cmac_index);
 
+    auto pdc_combo_m33_index = hw_find_pdc_entry(HW_PDC_TRIG_SELECT_PERIPHERAL, HW_PDC_PERIPH_TRIG_ID_COMBO, HW_PDC_MASTER_CM33,
+                                 (dg_configENABLE_XTAL32M_ON_WAKEUP ? HW_PDC_LUT_ENTRY_EN_XTAL : static_cast<HW_PDC_LUT_ENTRY_EN>(0)));
     hw_pdc_set_pending(pdc_combo_m33_index);
     hw_pdc_acknowledge(pdc_combo_m33_index);
 
@@ -244,7 +246,7 @@ void Configurable_MAC::Impl::write(gsl::span<uint8_t const> data)
     int rd_off{};
     int chunk{};
     int len = data.size();
-    uint8_t const* buf = data.data();
+    uint8_t const *buf = data.data();
 
     // uint32_t primask;
 

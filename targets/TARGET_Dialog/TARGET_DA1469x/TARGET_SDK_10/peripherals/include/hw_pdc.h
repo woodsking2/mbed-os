@@ -279,6 +279,7 @@ void hw_pdc_ack_all_pending_cm33(void);
  */
 void hw_pdc_lut_reset(void);
 
+__RETAINED_CODE uint32_t hw_find_pdc_entry(HW_PDC_TRIG_SELECT select, HW_PDC_PERIPH_TRIG_ID id, HW_PDC_MASTER master, HW_PDC_LUT_ENTRY_EN en);
 #endif /* dg_configUSE_HW_PDC */
 #endif /* HW_PDC_H_ */
 

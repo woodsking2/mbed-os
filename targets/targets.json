@@ -9714,6 +9714,7 @@
             "STDIO_MESSAGES",
             "LPTICKER",
             "SPI",            
+            "SLEEP",
             "INTERRUPTIN"
         ],
         "features": [

@@ -73,8 +73,7 @@ bool Interrupt_instance::Impl::read_pin_state()
 }
 void Interrupt_instance::Impl::triggered()
 {
-    auto pin_state = read_pin_state();
-    // debug("%d triggered %d\n", static_cast<int>(m_pin), pin_state);
+    auto pin_state = read_pin_state();    
     auto event_pin_state = gpio_irq_event_to_pin_state(m_event);
     set_hw_interrupt(!pin_state);
     if (event_pin_state == m_set_state)

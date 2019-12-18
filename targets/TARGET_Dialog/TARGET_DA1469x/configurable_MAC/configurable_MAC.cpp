@@ -3,6 +3,7 @@
 #include "gsl/gsl"
 #include "mbed_critical.h"
 #include "mbed_debug.h"
+#include <algorithm>
 extern "C"
 {
 #include "default_config.h"
@@ -11,13 +12,13 @@ extern "C"
 }
 using namespace std;
 using namespace gsl;
-#ifndef min
-#define min(a, b) ((a) < (b) ? (a) : (b))
-#endif
+// #ifndef min
+// #define min(a, b) ((a) < (b) ? (a) : (b))
+// #endif
 
-#ifndef max
-#define max(a, b) ((a) > (b) ? (a) : (b))
-#endif
+// #ifndef max
+// #define max(a, b) ((a) > (b) ? (a) : (b))
+// #endif
 
 #define CMAC_SYM_CONFIG ((void *)(0x00818f20 + MEMCTRL->CMI_CODE_BASE_REG))
 #define CMAC_SYM_CONFIG_DYN ((void *)(0x00821af8 + MEMCTRL->CMI_CODE_BASE_REG))
@@ -81,7 +82,7 @@ struct cmac_config_dynamic
 struct cmac_mbox *cmac_mbox_rx;
 struct cmac_mbox *cmac_mbox_tx;
 
-// int8_t pdc_timer_cmac_index;
+int8_t pdc_timer_cmac_index;
 
 // int8_t g_da1469x_pdc_cmac2sys;
 
@@ -156,22 +157,13 @@ class Configurable_MAC::Impl
 {
   public:
     Impl();
-    void reset();
     void initialize();
-    void write(uint8_t const *buff, size_t len);
+    void write(gsl::span<uint8_t const> data);
 };
-Configurable_MAC::Impl::Impl()
-{
-}
-void Configurable_MAC::Impl::reset()
-{
-    // CRG_TOP->CLK_RADIO_REG = (0 << CRG_TOP_CLK_RADIO_REG_RFCU_ENABLE_Pos) | (1 << CRG_TOP_CLK_RADIO_REG_CMAC_SYNCH_RESET_Pos) | (0 << CRG_TOP_CLK_RADIO_REG_CMAC_CLK_SEL_Pos) |
-    //                          (0 << CRG_TOP_CLK_RADIO_REG_CMAC_CLK_ENABLE_Pos) | (0 << CRG_TOP_CLK_RADIO_REG_CMAC_DIV_Pos);
-}
+Configurable_MAC::Impl::Impl() = default;
 
 void Configurable_MAC::Impl::initialize()
 {
-    reset();
     uint32_t cmac_addr_code = (uint32_t)&cmi_fw_dst_addr;
     uint32_t cmac_addr_data = cmac_addr_code & 0x0007fffc;
     uint32_t cmac_addr_end = (uint32_t)&__cmi_section_end__;
@@ -180,7 +172,7 @@ void Configurable_MAC::Impl::initialize()
     struct cmac_config_dynamic *cmac_config_dyn;
 
     /* Add PDC entry to wake up CMAC from M33 */
-    // pdc_timer_cmac_index = hw_pdc_add_entry(HW_PDC_LUT_ENTRY_VAL(HW_PDC_TRIG_SELECT_PERIPHERAL, HW_PDC_PERIPH_TRIG_ID_MAC_TIMER, HW_PDC_MASTER_CMAC, HW_PDC_LUT_ENTRY_EN_XTAL));
+    pdc_timer_cmac_index = hw_pdc_add_entry(HW_PDC_LUT_ENTRY_VAL(HW_PDC_TRIG_SELECT_PERIPHERAL, HW_PDC_PERIPH_TRIG_ID_MAC_TIMER, HW_PDC_MASTER_CMAC, HW_PDC_LUT_ENTRY_EN_XTAL));
     hw_pdc_set_pending(pdc_timer_cmac_index);
     hw_pdc_acknowledge(pdc_timer_cmac_index);
 
@@ -246,11 +238,14 @@ void Configurable_MAC::Impl::initialize()
 
     da1469x_cmac_pdc_signal();
 }
-void Configurable_MAC::Impl::write(uint8_t const *buf, size_t len)
+void Configurable_MAC::Impl::write(gsl::span<uint8_t const> data)
 {
-    uint16_t wr_off;
-    uint16_t rd_off;
-    uint16_t chunk;
+    int wr_off{};
+    int rd_off{};
+    int chunk{};
+    int len = data.size();
+    uint8_t const* buf = data.data();
+
     // uint32_t primask;
 
     // __HAL_DISABLE_INTERRUPTS(primask);
@@ -295,15 +290,11 @@ Configurable_MAC &Configurable_MAC::get_instance()
     static Configurable_MAC instance;
     return instance;
 }
-void Configurable_MAC::reset()
-{
-    m_impl->reset();
-}
 void Configurable_MAC::initialize()
 {
     m_impl->initialize();
 }
-void Configurable_MAC::write(uint8_t const *buff, size_t len)
+void Configurable_MAC::write(gsl::span<uint8_t const> data)
 {
-    m_impl->write(buff, len);
+    m_impl->write(data);
 }

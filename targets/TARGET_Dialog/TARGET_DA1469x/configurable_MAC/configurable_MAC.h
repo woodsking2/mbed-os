@@ -1,5 +1,6 @@
 #pragma once
 #include <memory>
+#include "gsl/gsl"
 class Configurable_MAC
 {
   private:
@@ -9,8 +10,7 @@ class Configurable_MAC
     std::unique_ptr<Impl> m_impl;
 
   public:
-    static Configurable_MAC &get_instance();
-    void reset();
+    static Configurable_MAC &get_instance();    
     void initialize();
-    void write(uint8_t const *buff, size_t len);
+    void write(gsl::span<uint8_t const> data);
 };

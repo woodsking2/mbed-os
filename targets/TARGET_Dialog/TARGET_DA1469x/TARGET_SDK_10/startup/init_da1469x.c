@@ -47,7 +47,7 @@ extern uint32_t __zero_table_end__;
 extern uint8_t end;
 extern uint8_t __HeapLimit;
 uint32_t pdc_combo_m33_index = HW_PDC_INVALID_LUT_INDEX;
-uint32_t pdc_timer_cmac_index = HW_PDC_INVALID_LUT_INDEX;
+// uint32_t pdc_timer_cmac_index = HW_PDC_INVALID_LUT_INDEX;
 __RETAINED_UNINIT __UNUSED uint32_t black_orca_chip_version;
 __RETAINED_RW uint32_t SystemLPClock = dg_configXTAL32K_FREQ;   /*!< System Low Power Clock Frequency (LP Clock) */
 
@@ -327,20 +327,20 @@ static void configure_pdc(void)
         no_syscpu_pdc_entries = false;
 #endif
 
-#if defined(CONFIG_USE_BLE)
-        /*
-         * Set up PDC entry for CMAC wakeup from MAC timer.
-         * This entry is also used for the SYS2CMAC mailbox interrupt.
-         */
-        pdc_timer_cmac_index = hw_pdc_add_entry(HW_PDC_LUT_ENTRY_VAL(
-                                                        HW_PDC_TRIG_SELECT_PERIPHERAL,
-                                                        HW_PDC_PERIPH_TRIG_ID_MAC_TIMER,
-                                                        HW_PDC_MASTER_CMAC,
-                                                        HW_PDC_LUT_ENTRY_EN_XTAL));
+// #if defined(CONFIG_USE_BLE)
+//         /*
+//          * Set up PDC entry for CMAC wakeup from MAC timer.
+//          * This entry is also used for the SYS2CMAC mailbox interrupt.
+//          */
+//         pdc_timer_cmac_index = hw_pdc_add_entry(HW_PDC_LUT_ENTRY_VAL(
+//                                                         HW_PDC_TRIG_SELECT_PERIPHERAL,
+//                                                         HW_PDC_PERIPH_TRIG_ID_MAC_TIMER,
+//                                                         HW_PDC_MASTER_CMAC,
+//                                                         HW_PDC_LUT_ENTRY_EN_XTAL));
 
-        hw_pdc_set_pending(pdc_timer_cmac_index);
-        hw_pdc_acknowledge(pdc_timer_cmac_index);
-#endif
+//         hw_pdc_set_pending(pdc_timer_cmac_index);
+//         hw_pdc_acknowledge(pdc_timer_cmac_index);
+// #endif
 
 //#if defined(OS_FREERTOS)
 #if (1)
@@ -480,12 +480,13 @@ void SystemInitPre(void)
         REG_SETF(CRG_TOP, PMU_CTRL_REG, TIM_SLEEP, 0);
         while (!REG_GETF(CRG_TOP, SYS_STAT_REG, TIM_IS_UP));
         GLOBAL_INT_RESTORE();
-
-        CRG_TOP->CLK_RADIO_REG = (0 << CRG_TOP_CLK_RADIO_REG_RFCU_ENABLE_Pos) | (1 << CRG_TOP_CLK_RADIO_REG_CMAC_SYNCH_RESET_Pos) | (0 << CRG_TOP_CLK_RADIO_REG_CMAC_CLK_SEL_Pos) |
-                             (0 << CRG_TOP_CLK_RADIO_REG_CMAC_CLK_ENABLE_Pos) | (0 << CRG_TOP_CLK_RADIO_REG_CMAC_DIV_Pos);                             
+                    
         /*
          * Keep CMAC core under reset
          */
+        REG_SETF(CRG_TOP, CLK_RADIO_REG, RFCU_ENABLE, 0);
+        REG_SETF(CRG_TOP, CLK_RADIO_REG, CMAC_CLK_SEL, 0);REG_SETF(CRG_TOP, CLK_RADIO_REG, CMAC_CLK_ENABLE, 0);
+        REG_SETF(CRG_TOP, CLK_RADIO_REG, CMAC_DIV, 0);
         REG_SETF(CRG_TOP, CLK_RADIO_REG, CMAC_CLK_ENABLE, 0);
         REG_SETF(CRG_TOP, CLK_RADIO_REG, CMAC_SYNCH_RESET, 1);
 
@@ -571,6 +572,7 @@ void da1469x_SystemInit(void)
         hw_otpc_init();
         hw_otpc_set_speed(HW_OTPC_CLK_FREQ_32MHz);
         hw_otpc_enter_mode(HW_OTPC_MODE_READ);
+        
         /* get TCS values */
         sys_tcs_get_trim_values_from_cs();
         /*

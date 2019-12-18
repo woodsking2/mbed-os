@@ -1,6 +1,7 @@
 #include "HCI_transport_driver.h"
 #include "configurable_MAC.h"
 #include "mbed_debug.h"
+using namespace gsl;
 ble::vendor::DA1469x::HCI_transport_driver::HCI_transport_driver(/* specific constructor arguments*/)
 {
 }
@@ -23,7 +24,7 @@ uint16_t ble::vendor::DA1469x::HCI_transport_driver::write(uint8_t packet_type, 
 {
     // debug("type:%d len:%d %02X %02X %02X\n", packet_type, len, data[0], data[1], data[2]);
     auto &instance = Configurable_MAC::get_instance();
-    instance.write(&packet_type, 1);
-    instance.write(data, len);
+    instance.write(make_span(&packet_type, 1));
+    instance.write(make_span(data, len));
     return len;
 }

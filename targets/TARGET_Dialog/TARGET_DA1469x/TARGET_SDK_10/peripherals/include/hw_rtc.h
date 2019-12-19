@@ -966,6 +966,15 @@ __STATIC_INLINE void hw_rtc_clock_enable(void)
         REG_SETF(CRG_TOP, CLK_RTCDIV_REG, RTC_DIV_ENABLE, 1);
 }
 
+__STATIC_INLINE bool hw_rtc_clock_enable_state(void)
+{
+        return REG_GETF(CRG_TOP, CLK_RTCDIV_REG, RTC_DIV_ENABLE);
+}
+
+__STATIC_INLINE bool hw_rtc_time_start_state(void)
+{
+        return !HW_RTC_REG_GETF(RTC_CONTROL_REG, RTC_TIME_DISABLE);
+}
 #endif /* dg_configUSE_HW_RTC */
 
 #endif /* HW_RTC_H_ */

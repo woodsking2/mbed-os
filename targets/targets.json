@@ -9715,7 +9715,8 @@
             "LPTICKER",
             "SPI",            
             "SLEEP",
-            "INTERRUPTIN"
+            "INTERRUPTIN",
+            "RTC"
         ],
         "features": [
             "BLE",

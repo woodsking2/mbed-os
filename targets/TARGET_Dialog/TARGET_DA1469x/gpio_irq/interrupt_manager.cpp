@@ -116,3 +116,7 @@ void Interrupt_manager::interrupt_from_isr()
 {
     m_impl->interrupt_from_isr();
 }
+void set_hw_interrupt(PinName pin, bool pin_state)
+{
+    
+}

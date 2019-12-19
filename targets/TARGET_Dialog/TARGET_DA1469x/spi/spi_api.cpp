@@ -300,16 +300,11 @@ void Spi_instance::release_pin()
     // }
 }
 Spi_instance::Spi_instance(PinName mosi, PinName miso, PinName sclk, PinName ssel)
-    : m_type(Spi_manager::get_instance().acquire()), m_mosi(mosi), m_miso(miso), m_sclk(sclk), m_ssel(ssel, true), m_frequency(4000000), m_bits(8), m_mode(0), m_slave(0)
+    : m_type(Spi_manager::get_instance().acquire(mosi, miso, sclk)), m_mosi(mosi), m_miso(miso), m_sclk(sclk), m_ssel(ssel, true), m_frequency(4000000), m_bits(8), m_mode(0), m_slave(0)
 {
     hw_sys_pd_com_enable();
     acquire_pin();
     spi_config const config = {
-        // .cs_pad =
-        //     {
-        //         .port = PinName_to_port(m_ssel),
-        //         .pin = PinName_to_pin(m_ssel),
-        //     },
         .word_mode = get_hw_word(),
         .smn_role = get_hw_master_slave(),
         .polarity_mode = get_hw_polarity(),
@@ -336,11 +331,8 @@ Spi_instance::~Spi_instance()
 
 SPIName spi_get_peripheral_name(PinName mosi, PinName miso, PinName mclk)
 {
-    if (mclk == P0_21)
-    {
-        return SPI_1;
-    }
-    return SPI_2;
+    auto type = Spi_manager::get_instance().acquire(mosi, miso, mclk);
+    return Spi_manager::get_spi_name(type);
 }
 /** Initialize the SPI peripheral
  *

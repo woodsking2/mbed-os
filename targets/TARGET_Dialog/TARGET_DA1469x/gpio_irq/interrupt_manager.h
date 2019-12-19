@@ -15,4 +15,5 @@ class Interrupt_manager final
     void add(PinName pin, Interrupt_instance *);
     void remove(PinName pin);
     void interrupt_from_isr();
+    void set_hw_interrupt(PinName pin, bool pin_state);
 };

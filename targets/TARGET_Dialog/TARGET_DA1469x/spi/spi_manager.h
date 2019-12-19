@@ -1,5 +1,8 @@
 #pragma once
+#include "PinNames.h"
 #include <memory>
+#include "Spi_manager.h"
+#include "PeripheralNames.h"
 class Spi_manager final
 {
   public:
@@ -17,6 +20,7 @@ class Spi_manager final
 
   public:
     static Spi_manager &get_instance();
-    Type acquire();
+    Type acquire(PinName mosi, PinName miso, PinName mclk);    
     void release(Type type);
+    static SPIName get_spi_name(Type type);
 };

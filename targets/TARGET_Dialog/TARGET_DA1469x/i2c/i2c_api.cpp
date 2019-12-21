@@ -33,6 +33,9 @@ void i2c_init(i2c_t *obj, PinName sda, PinName scl)
  */
 void i2c_frequency(i2c_t *obj, int hz)
 {
+    auto instance = reinterpret_cast<I2c_instance *>(obj->instance);
+    Expects(instance);
+    instance->set_frequency(hz);
 }
 
 /** Send START command
@@ -41,6 +44,9 @@ void i2c_frequency(i2c_t *obj, int hz)
  */
 int i2c_start(i2c_t *obj)
 {
+    auto instance = reinterpret_cast<I2c_instance *>(obj->instance);
+    Expects(instance);
+    instance->start();
 }
 
 /** Send STOP command
@@ -49,6 +55,9 @@ int i2c_start(i2c_t *obj)
  */
 int i2c_stop(i2c_t *obj)
 {
+    auto instance = reinterpret_cast<I2c_instance *>(obj->instance);
+    Expects(instance);
+    instance->stop();
 }
 
 /** Blocking reading data
@@ -62,6 +71,9 @@ int i2c_stop(i2c_t *obj)
  */
 int i2c_read(i2c_t *obj, int address, char *data, int length, int stop)
 {
+    auto instance = reinterpret_cast<I2c_instance *>(obj->instance);
+    Expects(instance);
+    return instance->read(address, data, length, stop);
 }
 
 /** Blocking sending data
@@ -77,6 +89,9 @@ int i2c_read(i2c_t *obj, int address, char *data, int length, int stop)
  */
 int i2c_write(i2c_t *obj, int address, const char *data, int length, int stop)
 {
+    auto instance = reinterpret_cast<I2c_instance *>(obj->instance);
+    Expects(instance);
+    return instance->write(address, data, length, stop);
 }
 
 /** Reset I2C peripheral. TODO: The action here. Most of the implementation sends stop()
@@ -85,6 +100,9 @@ int i2c_write(i2c_t *obj, int address, const char *data, int length, int stop)
  */
 void i2c_reset(i2c_t *obj)
 {
+    auto instance = reinterpret_cast<I2c_instance *>(obj->instance);
+    Expects(instance);
+    instance->reset();
 }
 
 /** Read one byte
@@ -95,6 +113,9 @@ void i2c_reset(i2c_t *obj)
  */
 int i2c_byte_read(i2c_t *obj, int last)
 {
+    auto instance = reinterpret_cast<I2c_instance *>(obj->instance);
+    Expects(instance);
+    return instance->byte_read(last);
 }
 
 /** Write one byte
@@ -105,6 +126,9 @@ int i2c_byte_read(i2c_t *obj, int last)
  */
 int i2c_byte_write(i2c_t *obj, int data)
 {
+    auto instance = reinterpret_cast<I2c_instance *>(obj->instance);
+    Expects(instance);
+    return instance->byte_write(data);
 }
 
 /**@}*/

@@ -1,11 +1,15 @@
 #define HAL_1469X
 #include "i2c_instance.h"
+#include "i2c_manager.h"
+#include "gsl/gsl"
 extern "C"
 {
-    #include "default_config.h"
-    #include "hw_i2c.h"
+#include "default_config.h"
+#include "hw_i2c.h"
+#include "hw_sys.h"
 }
 using namespace std;
+using namespace gsl;
 
 class I2c_instance::Impl
 {
@@ -20,11 +24,38 @@ class I2c_instance::Impl
     void reset();
     int byte_read(int last);
     int byte_write(int data);
+
+  private:
+    I2c_manager::Type m_type;
+    PinName m_sda;
+    PinName m_scl;
+
+    void acquire_pin();
+    void release_pin();
 };
-I2c_instance::Impl::Impl(PinName sda, PinName scl)
+I2c_instance::Impl::Impl(PinName sda, PinName scl) : m_type(I2c_manager::get_instance().acquire(sda, scl)), m_sda(sda), m_scl(scl)
 {
+    hw_sys_pd_com_enable();
+    acquire_pin();
 }
 I2c_instance::Impl::~Impl()
+{
+    release_pin();
+    I2c_manager::get_instance().release(m_type);
+    hw_sys_pd_com_disable();
+}
+void I2c_instance::Impl::acquire_pin()
+{
+    hw_sys_pd_com_enable();
+    auto _ = finally([&]() { hw_sys_pd_com_disable(); });
+    Expects(m_sda != NC);
+    Expects(m_scl != NC);
+    // hw_gpio_set_pin_function(PinName_to_port(m_sclk), PinName_to_pin(m_sclk), HW_GPIO_MODE_OUTPUT, get_clock_func());
+    // hw_gpio_pad_latch_enable(PinName_to_port(m_sclk), PinName_to_pin(m_sclk));
+    // hw_gpio_set_pin_function(PinName_to_port(m_sclk), PinName_to_pin(m_sclk), HW_GPIO_MODE_OUTPUT, get_clock_func());
+    // hw_gpio_pad_latch_enable(PinName_to_port(m_sclk), PinName_to_pin(m_sclk));
+}
+void I2c_instance::Impl::release_pin()
 {
 }
 void I2c_instance::Impl::set_frequency(int hz)

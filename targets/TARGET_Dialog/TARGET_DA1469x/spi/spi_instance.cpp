@@ -52,7 +52,27 @@ class Spi_instance::Impl
 int Spi_instance::Impl::write(int value)
 {
     m_ssel.write(0);
-    auto _ = finally([&]() { m_ssel.write(1); });
+    hw_gpio_pad_latch_enable(PinName_to_port(m_sclk), PinName_to_pin(m_sclk));
+    if (m_miso != NC)
+    {
+        hw_gpio_pad_latch_enable(PinName_to_port(m_miso), PinName_to_pin(m_miso));
+    }
+    if (m_mosi != NC)
+    {
+        hw_gpio_pad_latch_enable(PinName_to_port(m_mosi), PinName_to_pin(m_mosi));
+    }
+    auto _ = finally([&]() {
+        m_ssel.write(1);
+        hw_gpio_pad_latch_disable(PinName_to_port(m_sclk), PinName_to_pin(m_sclk));
+        if (m_miso != NC)
+        {
+            hw_gpio_pad_latch_disable(PinName_to_port(m_miso), PinName_to_pin(m_miso));
+        }
+        if (m_mosi != NC)
+        {
+            hw_gpio_pad_latch_disable(PinName_to_port(m_mosi), PinName_to_pin(m_mosi));
+        }
+    });
     switch (m_bits)
     {
     case 8:
@@ -255,21 +275,21 @@ void Spi_instance::Impl::acquire_pin()
 {
     hw_sys_pd_com_enable();
     auto _ = finally([&]() { hw_sys_pd_com_disable(); });
-
-    if (m_sclk != NC)
-    {
-        hw_gpio_set_pin_function(PinName_to_port(m_sclk), PinName_to_pin(m_sclk), HW_GPIO_MODE_OUTPUT, get_clock_func());
-        hw_gpio_pad_latch_enable(PinName_to_port(m_sclk), PinName_to_pin(m_sclk));
-    }
+    Expects(m_sclk != NC);
+    hw_gpio_set_pin_function(PinName_to_port(m_sclk), PinName_to_pin(m_sclk), HW_GPIO_MODE_OUTPUT, get_clock_func());
+    hw_gpio_pad_latch_enable(PinName_to_port(m_sclk), PinName_to_pin(m_sclk));
+    hw_gpio_pad_latch_disable(PinName_to_port(m_sclk), PinName_to_pin(m_sclk));
     if (m_miso != NC)
     {
         hw_gpio_set_pin_function(PinName_to_port(m_miso), PinName_to_pin(m_miso), HW_GPIO_MODE_INPUT, get_miso_func());
         hw_gpio_pad_latch_enable(PinName_to_port(m_miso), PinName_to_pin(m_miso));
+        hw_gpio_pad_latch_disable(PinName_to_port(m_miso), PinName_to_pin(m_miso));
     }
     if (m_mosi != NC)
     {
         hw_gpio_set_pin_function(PinName_to_port(m_mosi), PinName_to_pin(m_mosi), HW_GPIO_MODE_OUTPUT, get_mosi_func());
         hw_gpio_pad_latch_enable(PinName_to_port(m_mosi), PinName_to_pin(m_mosi));
+        hw_gpio_pad_latch_disable(PinName_to_port(m_mosi), PinName_to_pin(m_mosi));
     }
 }
 void Spi_instance::Impl::release_pin()

@@ -7,6 +7,11 @@ using namespace std;
 using namespace gsl;
 class Spi_manager::Impl
 {
+  public:
+    Impl();
+    Type acquire(PinName mosi, PinName miso, PinName mclk);
+    void release(Spi_manager::Type type);
+
   private:
     class Spi_pins
     {
@@ -25,16 +30,9 @@ class Spi_manager::Impl
     static constexpr auto spi_count = 2;
     array<Spi_pins, spi_count> m_acquired;
     PlatformMutex m_mutex;
-
-  public:
-    Impl();
-    Type acquire(PinName mosi, PinName miso, PinName mclk);
-    void release(Spi_manager::Type type);
 };
 
-Spi_manager::Impl::Impl()
-{
-}
+Spi_manager::Impl::Impl() = default;
 Spi_manager::Type Spi_manager::Impl::acquire(PinName mosi, PinName miso, PinName mclk)
 {
     m_mutex.lock();
@@ -62,7 +60,6 @@ void Spi_manager::Impl::release(Spi_manager::Type type)
     auto _ = finally([&]() { m_mutex.unlock(); });
     Spi_pins invalid_pins{};
     m_acquired[static_cast<int>(type)] = invalid_pins;
-    // m_acquired.at(static_cast<int>(type)) = false;
 }
 Spi_manager::Spi_manager() : m_impl(make_unique<Spi_manager::Impl>())
 {

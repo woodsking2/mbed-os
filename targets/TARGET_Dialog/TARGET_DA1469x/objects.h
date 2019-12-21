@@ -12,6 +12,10 @@ struct serial_s
 {
     void *instance;
 };
+struct i2c_s
+{
+    void *instance;
+};
 struct gpio_irq_s
 {
     void *instance;

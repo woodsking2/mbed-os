@@ -15,17 +15,17 @@ using namespace gsl;
 namespace
 {
 
-HW_WKUP_PIN_STATE pin_state_to_hw_event(bool pin_state)
-{
-    if (pin_state)
-    {
-        return HW_WKUP_PIN_STATE_HIGH;
-    }
-    else
-    {
-        return HW_WKUP_PIN_STATE_LOW;
-    }
-}
+// HW_WKUP_PIN_STATE pin_state_to_hw_event(bool pin_state)
+// {
+//     if (pin_state)
+//     {
+//         return HW_WKUP_PIN_STATE_HIGH;
+//     }
+//     else
+//     {
+//         return HW_WKUP_PIN_STATE_LOW;
+//     }
+// }
 bool gpio_irq_event_to_pin_state(gpio_irq_event event)
 {
     switch (event)
@@ -84,7 +84,7 @@ void Interrupt_instance::Impl::triggered()
 void Interrupt_instance::Impl::set_hw_interrupt(bool pin_state)
 {
 #warning debug
-    auto hw_event = pin_state_to_hw_event(pin_state);
+    // auto hw_event = pin_state_to_hw_event(pin_state);
     m_set_state = pin_state;
     // hw_wkup_gpio_configure_pin(PinName_to_port(m_pin), PinName_to_pin(m_pin), true, hw_event);
 }

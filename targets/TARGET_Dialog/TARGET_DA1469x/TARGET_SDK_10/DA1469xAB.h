@@ -1845,7 +1845,9 @@ typedef struct {                                /*!< (@ 0x50000100) WAKEUP Struc
 #define GPADC                       ((GPADC_Type*)             GPADC_BASE)
 #define GPIO                        ((GPIO_Type*)              GPIO_BASE)
 #define GPREG                       ((GPREG_Type*)             GPREG_BASE)
+#ifdef HAL_1469X
 #define I2C                         ((I2C_Type*)               I2C_BASE)
+#endif
 #define I2C2                        ((I2C2_Type*)              I2C2_BASE)
 #define LCDC                        ((LCDC_Type*)              LCDC_BASE)
 #define LRA                         ((LRA_Type*)               LRA_BASE)
@@ -1862,8 +1864,8 @@ typedef struct {                                /*!< (@ 0x50000100) WAKEUP Struc
 #define SNC                         ((SNC_Type*)               SNC_BASE)
 #ifdef HAL_1469X
 #define SPI                         ((SPI_Type*)               SPI_BASE)
-#define SPI2                        ((SPI2_Type*)              SPI2_BASE)
 #endif
+#define SPI2                        ((SPI2_Type*)              SPI2_BASE)
 #define SYS_WDOG                    ((SYS_WDOG_Type*)          SYS_WDOG_BASE)
 #define TIMER                       ((TIMER_Type*)             TIMER_BASE)
 #define TIMER2                      ((TIMER2_Type*)            TIMER2_BASE)

@@ -52,7 +52,6 @@ class Spi_instance::Impl
 int Spi_instance::Impl::write(int value)
 {
     hw_sys_pd_com_enable();
-    auto _ = finally([&]() { hw_sys_pd_com_disable(); });
     m_ssel.write(0);
     hw_gpio_pad_latch_enable(PinName_to_port(m_sclk), PinName_to_pin(m_sclk));
     if (m_miso != NC)
@@ -74,6 +73,7 @@ int Spi_instance::Impl::write(int value)
         {
             hw_gpio_pad_latch_disable(PinName_to_port(m_mosi), PinName_to_pin(m_mosi));
         }
+        hw_sys_pd_com_disable();
     });
     switch (m_bits)
     {
@@ -91,9 +91,11 @@ int Spi_instance::Impl::write(int value)
 int Spi_instance::Impl::write(const char *tx_buffer, int tx_length, char *rx_buffer, int rx_length, char write_fill)
 {
     hw_sys_pd_com_enable();
-    auto _ = finally([&]() { hw_sys_pd_com_disable(); });
     m_ssel.write(0);
-    auto _ = finally([&]() { m_ssel.write(1); });
+    auto _ = finally([&]() {
+        m_ssel.write(1);
+        hw_sys_pd_com_disable();
+    });
     auto total = (tx_length > rx_length) ? tx_length : rx_length;
     span<uint8_t const> tx{};
     span<uint8_t> rx{};

@@ -7,6 +7,7 @@ extern "C"
 #include "default_config.h"
 #include "hw_i2c.h"
 #include "hw_sys.h"
+#include "hw_gpio.h"
 }
 using namespace std;
 using namespace gsl;
@@ -29,14 +30,92 @@ class I2c_instance::Impl
     I2c_manager::Type m_type;
     PinName m_sda;
     PinName m_scl;
+    int m_frequency;
+    uint16_t m_address;
 
+    constexpr static auto invalid_address{0xFFFF};
     void acquire_pin();
     void release_pin();
+    HW_GPIO_FUNC get_clock_func();
+    HW_GPIO_FUNC get_data_func();
+    HW_I2C_ID get_hw_id();
+    HW_I2C_SPEED get_hw_frequency();
+    static HW_I2C_SPEED frequency_convert(int frequency);
 };
-I2c_instance::Impl::Impl(PinName sda, PinName scl) : m_type(I2c_manager::get_instance().acquire(sda, scl)), m_sda(sda), m_scl(scl)
+HW_I2C_SPEED I2c_instance::Impl::frequency_convert(int frequency)
+{
+    if (frequency >= 3400000)
+    {
+        return HW_I2C_SPEED_HIGH;
+    }
+    else if (frequency >= 400000)
+    {
+        return HW_I2C_SPEED_FAST;
+    }
+    else
+    {
+        return HW_I2C_SPEED_STANDARD;
+    }
+}
+HW_I2C_SPEED I2c_instance::Impl::get_hw_frequency()
+{
+    return frequency_convert(m_frequency);
+}
+HW_I2C_ID I2c_instance::Impl::get_hw_id()
+{
+    if (m_type == I2c_manager::Type::i2c_1)
+    {
+        return HW_I2C1;
+    }
+    else
+    {
+        return HW_I2C2;
+    }
+}
+HW_GPIO_FUNC I2c_instance::Impl::get_clock_func()
+{
+    if (m_type == I2c_manager::Type::i2c_1)
+    {
+        return HW_GPIO_FUNC_I2C_SCL;
+    }
+    else
+    {
+        return HW_GPIO_FUNC_I2C2_SCL;
+    }
+}
+HW_GPIO_FUNC I2c_instance::Impl::get_data_func()
+{
+    if (m_type == I2c_manager::Type::i2c_1)
+    {
+        return HW_GPIO_FUNC_I2C_SDA;
+    }
+    else
+    {
+        return HW_GPIO_FUNC_I2C2_SDA;
+    }
+}
+I2c_instance::Impl::Impl(PinName sda, PinName scl) : m_type(I2c_manager::get_instance().acquire(sda, scl)), m_sda(sda), m_scl(scl), m_frequency(100000), m_address(invalid_address)
 {
     hw_sys_pd_com_enable();
+    auto _ = finally([&]() { hw_sys_pd_com_disable(); });
     acquire_pin();
+    i2c_config const config = {
+        .clock_cfg =
+            {
+                .ss_hcnt = 0,
+                .ss_lcnt = 0,
+                .fs_hcnt = 0,
+                .fs_lcnt = 0,
+                .hs_hcnt = 0,
+                .hs_lcnt = 0,
+            },
+        .speed = get_hw_frequency(),
+        .mode = HW_I2C_MODE_MASTER,
+        .addr_mode = HW_I2C_ADDRESSING_7B,
+        .address = 0,
+        .event_cb = 0,
+    };
+    hw_i2c_init(get_hw_id(), &config);
 }
 I2c_instance::Impl::~Impl()
 {
@@ -50,22 +129,38 @@ void I2c_instance::Impl::acquire_pin()
     auto _ = finally([&]() { hw_sys_pd_com_disable(); });
     Expects(m_sda != NC);
     Expects(m_scl != NC);
-    // hw_gpio_set_pin_function(PinName_to_port(m_sclk), PinName_to_pin(m_sclk), HW_GPIO_MODE_OUTPUT, get_clock_func());
-    // hw_gpio_pad_latch_enable(PinName_to_port(m_sclk), PinName_to_pin(m_sclk));
-    // hw_gpio_set_pin_function(PinName_to_port(m_sclk), PinName_to_pin(m_sclk), HW_GPIO_MODE_OUTPUT, get_clock_func());
-    // hw_gpio_pad_latch_enable(PinName_to_port(m_sclk), PinName_to_pin(m_sclk));
+    hw_gpio_set_pin_function(PinName_to_port(m_scl), PinName_to_pin(m_scl), HW_GPIO_MODE_OUTPUT, get_clock_func());
+    hw_gpio_pad_latch_enable(PinName_to_port(m_scl), PinName_to_pin(m_scl));
+    hw_gpio_pad_latch_disable(PinName_to_port(m_scl), PinName_to_pin(m_scl));
+    hw_gpio_set_pin_function(PinName_to_port(m_sda), PinName_to_pin(m_sda), HW_GPIO_MODE_OUTPUT, get_data_func());
+    hw_gpio_pad_latch_enable(PinName_to_port(m_sda), PinName_to_pin(m_sda));
+    hw_gpio_pad_latch_disable(PinName_to_port(m_sda), PinName_to_pin(m_sda));
 }
 void I2c_instance::Impl::release_pin()
 {
+
+    hw_gpio_set_default(m_scl);
+    hw_gpio_set_default(m_sda);
 }
 void I2c_instance::Impl::set_frequency(int hz)
 {
+    if (frequency_convert(m_frequency) == frequency_convert(hz))
+    {
+        return;
+    }
+    hw_sys_pd_com_enable();
+    auto _ = finally([&]() { hw_sys_pd_com_disable(); });
+    hw_i2c_set_speed(get_hw_id(), get_hw_frequency());
 }
 int I2c_instance::Impl::start()
 {
+    Expects(false);
+    return -1;
 }
 int I2c_instance::Impl::stop()
 {
+    Expects(false);
+    return -1;
 }
 int I2c_instance::Impl::read(int address, char *data, int length, int stop)
 {
@@ -75,10 +170,24 @@ int I2c_instance::Impl::write(int address, const char *data, int length, int sto
 }
 void I2c_instance::Impl::reset()
 {
+    hw_i2c_reset_abort_source(get_hw_id());
+    hw_i2c_reset_int_all(get_hw_id());
 }
+/**
+ * @brief
+ *
+ *  @param last Acknoledge ,0 mean  ack ,1 mean no ack
+ *  @return The read byte
+ */
 int I2c_instance::Impl::byte_read(int last)
 {
 }
+/**
+ * @brief
+ *
+ *  @param data Byte to be written
+ *  @return 0 if NAK was received, 1 if ACK was received, 2 for timeout.
+ */
 int I2c_instance::Impl::byte_write(int data)
 {
 }

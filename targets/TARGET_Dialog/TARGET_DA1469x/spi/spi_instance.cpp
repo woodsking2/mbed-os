@@ -51,6 +51,8 @@ class Spi_instance::Impl
 };
 int Spi_instance::Impl::write(int value)
 {
+    hw_sys_pd_com_enable();
+    auto _ = finally([&]() { hw_sys_pd_com_disable(); });
     m_ssel.write(0);
     hw_gpio_pad_latch_enable(PinName_to_port(m_sclk), PinName_to_pin(m_sclk));
     if (m_miso != NC)
@@ -88,6 +90,8 @@ int Spi_instance::Impl::write(int value)
 }
 int Spi_instance::Impl::write(const char *tx_buffer, int tx_length, char *rx_buffer, int rx_length, char write_fill)
 {
+    hw_sys_pd_com_enable();
+    auto _ = finally([&]() { hw_sys_pd_com_disable(); });
     m_ssel.write(0);
     auto _ = finally([&]() { m_ssel.write(1); });
     auto total = (tx_length > rx_length) ? tx_length : rx_length;
@@ -256,6 +260,8 @@ void Spi_instance::Impl::set_format(int bits, int mode, int slave)
     {
         return;
     }
+    hw_sys_pd_com_enable();
+    auto _ = finally([&]() { hw_sys_pd_com_disable(); });
     m_bits = bits;
     m_mode = mode;
     hw_spi_set_word_size(get_hw_id(), get_hw_word());
@@ -268,6 +274,8 @@ void Spi_instance::Impl::set_frequency(int hz)
     {
         return;
     }
+    hw_sys_pd_com_enable();
+    auto _ = finally([&]() { hw_sys_pd_com_disable(); });
     hw_spi_set_clock_freq(get_hw_id(), get_hw_frequency());
 }
 
@@ -311,6 +319,7 @@ Spi_instance::Impl::Impl(PinName mosi, PinName miso, PinName sclk, PinName ssel)
     : m_type(Spi_manager::get_instance().acquire(mosi, miso, sclk)), m_mosi(mosi), m_miso(miso), m_sclk(sclk), m_ssel(ssel, true), m_frequency(4000000), m_bits(8), m_mode(0), m_slave(0)
 {
     hw_sys_pd_com_enable();
+    auto _ = finally([&]() { hw_sys_pd_com_disable(); });
     acquire_pin();
     spi_config const config = {
         .word_mode = get_hw_word(),
@@ -330,10 +339,11 @@ Spi_instance::Impl::Impl(PinName mosi, PinName miso, PinName sclk, PinName ssel)
 }
 Spi_instance::Impl::~Impl()
 {
+    hw_sys_pd_com_enable();
+    auto _ = finally([&]() { hw_sys_pd_com_disable(); });
     hw_spi_deinit(get_hw_id());
     release_pin();
     Spi_manager::get_instance().release(m_type);
-    hw_sys_pd_com_disable();
 }
 
 Spi_instance::Spi_instance(PinName mosi, PinName miso, PinName sclk, PinName ssel) : m_impl(make_unique<Spi_instance::Impl>(mosi, miso, sclk, ssel))

@@ -80,7 +80,7 @@ void wait_us(int us)
 #else // DEVICE_USTICKER
 
 // fallback to wait_ns for targets without usticker
-void wait_us(int us)
+MBED_WEAK void wait_us(int us)
 {
     while (us > 1024) {
         us -= 1024;

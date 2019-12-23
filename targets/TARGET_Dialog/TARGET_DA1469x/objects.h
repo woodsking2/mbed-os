@@ -29,3 +29,8 @@ struct flash_s
 {
     void *instance;
 };
+struct pwmout_s
+{
+    void* instance;
+};
+

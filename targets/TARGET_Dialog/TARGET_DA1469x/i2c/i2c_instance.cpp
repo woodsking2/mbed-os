@@ -2,6 +2,7 @@
 #include "i2c_instance.h"
 #include "i2c_manager.h"
 #include "gsl/gsl"
+#include "mbed_debug.h"
 extern "C"
 {
 #include "default_config.h"
@@ -164,9 +165,47 @@ int I2c_instance::Impl::stop()
 }
 int I2c_instance::Impl::read(int address, char *data, int length, int stop)
 {
+    int addres_7_bit = address >> 1;
+    Ensures((addres_7_bit & 0b1111111) == 0);
+    if (addres_7_bit != m_address)
+    {
+        hw_i2c_set_target_address(get_hw_id(), addres_7_bit);
+        m_address = addres_7_bit;
+    }
+    HW_I2C_ABORT_SOURCE abort_code{};
+    uint32_t flags = HW_I2C_F_NONE;
+    if (stop)
+    {
+        flags = HW_I2C_F_ADD_STOP;
+    }
+    auto read_result = hw_i2c_read_buffer_sync(get_hw_id(), reinterpret_cast<uint8_t *>(data), length, &abort_code, flags);
+    if (HW_I2C_ABORT_NONE != abort_code)
+    {
+        debug("read i2c fail[%d]: %d\n", read_result, abort_code);
+    }
+    return read_result;
 }
 int I2c_instance::Impl::write(int address, const char *data, int length, int stop)
 {
+    int addres_7_bit = address >> 1;
+    Ensures((addres_7_bit & 0b1111111) == 0);
+    if (addres_7_bit != m_address)
+    {
+        hw_i2c_set_target_address(get_hw_id(), addres_7_bit);
+        m_address = addres_7_bit;
+    }
+    HW_I2C_ABORT_SOURCE abort_code{};
+    uint32_t flags = HW_I2C_F_NONE;
+    if (stop)
+    {
+        flags = HW_I2C_F_ADD_STOP;
+    }
+    auto read_result = hw_i2c_write_buffer_sync(get_hw_id(), reinterpret_cast<uint8_t const *>(data), length, &abort_code, flags);
+    if (HW_I2C_ABORT_NONE != abort_code)
+    {
+        debug("write i2c fail[%d]: %d\n", read_result, abort_code);
+    }
+    return read_result;
 }
 void I2c_instance::Impl::reset()
 {

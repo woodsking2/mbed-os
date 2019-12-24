@@ -11,16 +11,14 @@ class Spi_manager final
         spi_1,
         spi_2,
     };
+    static Spi_manager &get_instance();
+    Type acquire(PinName mosi, PinName miso, PinName mclk);
+    void release(Type type);
+    static SPIName get_spi_name(Type type);
 
   private:
     Spi_manager();
     ~Spi_manager();
     class Impl;
     std::unique_ptr<Impl> m_impl;
-
-  public:
-    static Spi_manager &get_instance();
-    Type acquire(PinName mosi, PinName miso, PinName mclk);    
-    void release(Type type);
-    static SPIName get_spi_name(Type type);
 };

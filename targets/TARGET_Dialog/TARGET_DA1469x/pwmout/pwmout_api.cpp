@@ -1,6 +1,6 @@
 #include "pwmout_api.h"
 #include "gsl/gsl"
-
+#include "pwmout_instance.h"
 using namespace gsl;
 /** Initialize the pwm out peripheral and configure the pin
  *
@@ -9,7 +9,9 @@ using namespace gsl;
  */
 void pwmout_init(pwmout_t *obj, PinName pin)
 {
-
+    auto instance = new Pwmout_instance(pin);    
+    Expects(instance);
+    obj->instance = instance;
 }
 /** Deinitialize the pwmout object
  *
@@ -17,7 +19,10 @@ void pwmout_init(pwmout_t *obj, PinName pin)
  */
 void pwmout_free(pwmout_t *obj)
 {
-
+    auto instance = reinterpret_cast<Pwmout_instance *>(obj->instance);
+    Expects(instance);
+    delete instance;
+    obj->instance = 0;
 }
 /** Set the output duty-cycle in range <0.0f, 1.0f>
  *
@@ -27,7 +32,9 @@ void pwmout_free(pwmout_t *obj)
  */
 void pwmout_write(pwmout_t *obj, float percent)
 {
-
+    auto instance = reinterpret_cast<Pwmout_instance *>(obj->instance);
+    Expects(instance);
+    instance->write(percent);
 }
 /** Read the current float-point output duty-cycle
  *
@@ -36,7 +43,9 @@ void pwmout_write(pwmout_t *obj, float percent)
  */
 float pwmout_read(pwmout_t *obj)
 {
-
+    auto instance = reinterpret_cast<Pwmout_instance *>(obj->instance);
+    Expects(instance);
+    return instance->read();
 }
 /** Set the PWM period specified in seconds, keeping the duty cycle the same
  *
@@ -46,7 +55,9 @@ float pwmout_read(pwmout_t *obj)
  */
 void pwmout_period(pwmout_t *obj, float seconds)
 {
-
+    auto instance = reinterpret_cast<Pwmout_instance *>(obj->instance);
+    Expects(instance);
+    instance->period(seconds);
 }
 /** Set the PWM period specified in miliseconds, keeping the duty cycle the same
  *
@@ -55,7 +66,9 @@ void pwmout_period(pwmout_t *obj, float seconds)
  */
 void pwmout_period_ms(pwmout_t *obj, int ms)
 {
-
+    auto instance = reinterpret_cast<Pwmout_instance *>(obj->instance);
+    Expects(instance);
+    instance->period(ms);
 }
 /** Set the PWM period specified in microseconds, keeping the duty cycle the same
  *
@@ -64,7 +77,9 @@ void pwmout_period_ms(pwmout_t *obj, int ms)
  */
 void pwmout_period_us(pwmout_t *obj, int us)
 {
-
+    auto instance = reinterpret_cast<Pwmout_instance *>(obj->instance);
+    Expects(instance);
+    instance->period(us);
 }
 /** Set the PWM pulsewidth specified in seconds, keeping the period the same.
  *
@@ -73,7 +88,9 @@ void pwmout_period_us(pwmout_t *obj, int us)
  */
 void pwmout_pulsewidth(pwmout_t *obj, float seconds)
 {
-
+    auto instance = reinterpret_cast<Pwmout_instance *>(obj->instance);
+    Expects(instance);
+    instance->pulse_width(seconds);
 }
 
 /** Set the PWM pulsewidth specified in miliseconds, keeping the period the same.
@@ -83,7 +100,9 @@ void pwmout_pulsewidth(pwmout_t *obj, float seconds)
  */
 void pwmout_pulsewidth_ms(pwmout_t *obj, int ms)
 {
-
+    auto instance = reinterpret_cast<Pwmout_instance *>(obj->instance);
+    Expects(instance);
+    instance->pulse_width(ms);
 }
 /** Set the PWM pulsewidth specified in microseconds, keeping the period the same.
  *
@@ -92,5 +111,7 @@ void pwmout_pulsewidth_ms(pwmout_t *obj, int ms)
  */
 void pwmout_pulsewidth_us(pwmout_t *obj, int us)
 {
-
+    auto instance = reinterpret_cast<Pwmout_instance *>(obj->instance);
+    Expects(instance);
+    instance->pulse_width(us);
 }

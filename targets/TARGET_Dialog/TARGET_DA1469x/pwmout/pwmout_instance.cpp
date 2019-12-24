@@ -50,10 +50,32 @@ tuple<HW_TIMER_CLK_SRC, uint16_t, uint16_t> Pwmout_instance::Impl::calculate_hw_
     HW_TIMER_CLK_SRC source{};
     int frequency{};
     int duty_cycle{};
-    // Expects(m_period <= 2.f && m_period >= 1.f / 16000000.f);
-    source = HW_TIMER_CLK_SRC_EXT;
-    frequency = 20;
-    duty_cycle = 10;
+    int source_clock{};
+    Expects(m_period <= 2.f && m_period >= 1.f / 16000000.f);
+    if (m_period <= 1.f / (16 * 1024))
+    {
+        source = HW_TIMER_CLK_SRC_INT;
+        source_clock = 32 * 1024;
+        debug("lp clock\n");
+    }
+    else
+    {
+        source = HW_TIMER_CLK_SRC_EXT;
+        source_clock = 32000000;
+        debug("32m clock\n");
+    }
+    frequency = source_clock * m_period;
+    if (m_duty_cycle >= 0.f)
+    {
+        duty_cycle = frequency * m_duty_cycle;
+        debug("percent duty %d\n", duty_cycle);
+    }
+    else
+    {
+        duty_cycle = source_clock * m_pulse_width;
+        debug("pulse_width duty %d\n", duty_cycle);
+    }
+
     return make_tuple(source, frequency - 1, duty_cycle);
 }
 HW_TIMER_ID Pwmout_instance::Impl::get_hw_id()
@@ -200,6 +222,7 @@ void Pwmout_instance::Impl::setup_pwm()
         m_hw_source = source;
         m_hw_frequency = frequency;
         m_hw_duty_cycle = duty_cycle;
+        debug("hw_source: %d, hw_freq: %d hw_duty_cycle: %d\n", m_hw_source, m_hw_frequency, m_hw_duty_cycle);
     });
     if (m_pwm_enable)
     {

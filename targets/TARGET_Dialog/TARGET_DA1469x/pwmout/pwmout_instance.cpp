@@ -56,34 +56,30 @@ tuple<HW_TIMER_CLK_SRC, uint16_t, uint16_t, uint8_t> Pwmout_instance::Impl::calc
     int prescaler{1};
     float multiple{};
     Expects(m_period <= 2.f && m_period >= 1.f / 16000000.f);
-    if (m_period <= 1.f / (16 * 1024))
+    if (m_period >= 1.f / (16 * 1024))
     {
         source = HW_TIMER_CLK_SRC_INT;
-        source_clock = 32 * 1024;
-        debug("lp clock\n");
+        source_clock = 32 * 1024;        
     }
     else
     {
         source = HW_TIMER_CLK_SRC_EXT;
-        source_clock = 32000000;
-        debug("32m clock\n");
+        source_clock = 32000000;        
     }
     frequency = source_clock * m_period;
     if (frequency > 0x10000)
     {
         prescaler = (frequency + 0xFFFF) / 0x10000;
         frequency /= prescaler;
-        debug("prescaler %d, frequency %d\n", prescaler, frequency);
+        frequency = 2;                
     }
     if (m_duty_cycle >= 0.f)
     {
         duty_cycle = frequency * m_duty_cycle;
-        debug("percent duty %d\n", duty_cycle);
     }
     else
     {
-        duty_cycle = source_clock * m_pulse_width;
-        debug("pulse_width duty %d\n", duty_cycle);
+        duty_cycle = source_clock * m_pulse_width;        
     }
 
     return make_tuple(source, round(frequency - 1), round(duty_cycle), prescaler - 1);
@@ -218,29 +214,24 @@ void Pwmout_instance::Impl::setup_pwm()
     Expects(m_pulse_width < 0.f || m_duty_cycle < 0.f);
     Expects(m_pulse_width >= 0.f || m_duty_cycle >= 0.f);
     if (m_duty_cycle == 0.f || m_pulse_width == 0.f)
-    {
-        debug("set pwm low\n");
+    {        
         set_pin_gpio(false);
         return;
     }
     if (m_duty_cycle == 1.f || m_pulse_width == 1.f)
-    {
-        debug("set pwm high\n");
+    {        
         set_pin_gpio(true);
         return;
-    }
-    debug("m_period: %f, m_duty_cycle: %f, m_pulse_width:%f\n", m_period, m_duty_cycle, m_pulse_width);
+    }    
     auto [source, frequency, duty_cycle, prescaler] = calculate_hw_param();
     auto _ = finally([&]() {
         m_hw_source = source;
         m_hw_frequency = frequency;
         m_hw_duty_cycle = duty_cycle;
-        m_hw_prescaler = prescaler;
-        debug("hw_source: %d, hw_freq: %d hw_duty_cycle: %d prescaler:%d\n", m_hw_source, m_hw_frequency, m_hw_duty_cycle, prescaler);
+        m_hw_prescaler = prescaler;        
     });
     if (m_pwm_enable)
-    {
-        debug("m_pwm_enable modify\n");
+    {        
         // hw_timer_set_prescaler
         if (prescaler != m_hw_prescaler)
         {
@@ -259,8 +250,7 @@ void Pwmout_instance::Impl::setup_pwm()
             hw_timer_set_pwm_duty_cycle(get_hw_id(), duty_cycle);
         }
         return;
-    }
-    debug("m_pwm setup\n");
+    }    
     m_pwm_enable = true;
     hw_sys_pd_com_enable();
     set_pin_pwm();

@@ -68,7 +68,7 @@ void pwmout_period_ms(pwmout_t *obj, int ms)
 {
     auto instance = reinterpret_cast<Pwmout_instance *>(obj->instance);
     Expects(instance);
-    instance->period(ms);
+    instance->period_ms(ms);
 }
 /** Set the PWM period specified in microseconds, keeping the duty cycle the same
  *
@@ -79,7 +79,7 @@ void pwmout_period_us(pwmout_t *obj, int us)
 {
     auto instance = reinterpret_cast<Pwmout_instance *>(obj->instance);
     Expects(instance);
-    instance->period(us);
+    instance->period_us(us);
 }
 /** Set the PWM pulsewidth specified in seconds, keeping the period the same.
  *
@@ -102,7 +102,7 @@ void pwmout_pulsewidth_ms(pwmout_t *obj, int ms)
 {
     auto instance = reinterpret_cast<Pwmout_instance *>(obj->instance);
     Expects(instance);
-    instance->pulse_width(ms);
+    instance->pulse_width_ms(ms);
 }
 /** Set the PWM pulsewidth specified in microseconds, keeping the period the same.
  *
@@ -113,5 +113,5 @@ void pwmout_pulsewidth_us(pwmout_t *obj, int us)
 {
     auto instance = reinterpret_cast<Pwmout_instance *>(obj->instance);
     Expects(instance);
-    instance->pulse_width(us);
+    instance->pulse_width_us(us);
 }

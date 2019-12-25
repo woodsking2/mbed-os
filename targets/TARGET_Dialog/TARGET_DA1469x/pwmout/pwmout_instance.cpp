@@ -3,6 +3,7 @@
 #include "mbed_debug.h"
 #include "pwmout_manager.h"
 #include <tuple>
+#include <cmath>
 extern "C"
 {
 #include "default_config.h"
@@ -33,11 +34,12 @@ class Pwmout_instance::Impl
     float m_period;      // seconds
     float m_pulse_width; // seconds, 负数表示使用 m_duty_cycle
     bool m_pwm_enable;
+    uint8_t m_hw_prescaler;
     HW_TIMER_CLK_SRC m_hw_source;
     uint16_t m_hw_frequency;
     uint16_t m_hw_duty_cycle;
 
-    tuple<HW_TIMER_CLK_SRC, uint16_t, uint16_t> calculate_hw_param();
+    tuple<HW_TIMER_CLK_SRC, uint16_t, uint16_t, uint8_t> calculate_hw_param();
     HW_TIMER_ID get_hw_id();
     void set_pin_pwm();
     void set_pin_gpio(bool value);
@@ -45,12 +47,14 @@ class Pwmout_instance::Impl
     HW_GPIO_FUNC get_pin_func();
     void setup_pwm();
 };
-tuple<HW_TIMER_CLK_SRC, uint16_t, uint16_t> Pwmout_instance::Impl::calculate_hw_param()
+tuple<HW_TIMER_CLK_SRC, uint16_t, uint16_t, uint8_t> Pwmout_instance::Impl::calculate_hw_param()
 {
     HW_TIMER_CLK_SRC source{};
-    int frequency{};
-    int duty_cycle{};
+    float frequency{};
+    float duty_cycle{};
     int source_clock{};
+    int prescaler{1};
+    float multiple{};
     Expects(m_period <= 2.f && m_period >= 1.f / 16000000.f);
     if (m_period <= 1.f / (16 * 1024))
     {
@@ -65,6 +69,12 @@ tuple<HW_TIMER_CLK_SRC, uint16_t, uint16_t> Pwmout_instance::Impl::calculate_hw_
         debug("32m clock\n");
     }
     frequency = source_clock * m_period;
+    if (frequency > 0x10000)
+    {
+        prescaler = (frequency + 0xFFFF) / 0x10000;
+        frequency /= prescaler;
+        debug("prescaler %d, frequency %d\n", prescaler, frequency);
+    }
     if (m_duty_cycle >= 0.f)
     {
         duty_cycle = frequency * m_duty_cycle;
@@ -76,7 +86,7 @@ tuple<HW_TIMER_CLK_SRC, uint16_t, uint16_t> Pwmout_instance::Impl::calculate_hw_
         debug("pulse_width duty %d\n", duty_cycle);
     }
 
-    return make_tuple(source, frequency - 1, duty_cycle);
+    return make_tuple(source, round(frequency - 1), round(duty_cycle), prescaler - 1);
 }
 HW_TIMER_ID Pwmout_instance::Impl::get_hw_id()
 {
@@ -183,6 +193,7 @@ void Pwmout_instance::Impl::pulse_width(float seconds)
 {
     Expects(seconds <= m_period);
     m_duty_cycle = invalid_duty_cycle;
+    m_pulse_width = seconds;
     setup_pwm();
 }
 void Pwmout_instance::Impl::pulse_width_ms(int ms)
@@ -190,6 +201,7 @@ void Pwmout_instance::Impl::pulse_width_ms(int ms)
     auto pulse_width = ms / 1000.f;
     Expects(pulse_width <= m_period);
     m_duty_cycle = invalid_duty_cycle;
+    m_pulse_width = pulse_width;
     setup_pwm();
 }
 void Pwmout_instance::Impl::pulse_width_us(int us)
@@ -197,6 +209,7 @@ void Pwmout_instance::Impl::pulse_width_us(int us)
     auto pulse_width = us / 1000000.f;
     Expects(pulse_width <= m_period);
     m_duty_cycle = invalid_duty_cycle;
+    m_pulse_width = pulse_width;
     setup_pwm();
 }
 
@@ -217,16 +230,22 @@ void Pwmout_instance::Impl::setup_pwm()
         return;
     }
     debug("m_period: %f, m_duty_cycle: %f, m_pulse_width:%f\n", m_period, m_duty_cycle, m_pulse_width);
-    auto [source, frequency, duty_cycle] = calculate_hw_param();
+    auto [source, frequency, duty_cycle, prescaler] = calculate_hw_param();
     auto _ = finally([&]() {
         m_hw_source = source;
         m_hw_frequency = frequency;
         m_hw_duty_cycle = duty_cycle;
-        debug("hw_source: %d, hw_freq: %d hw_duty_cycle: %d\n", m_hw_source, m_hw_frequency, m_hw_duty_cycle);
+        m_hw_prescaler = prescaler;
+        debug("hw_source: %d, hw_freq: %d hw_duty_cycle: %d prescaler:%d\n", m_hw_source, m_hw_frequency, m_hw_duty_cycle, prescaler);
     });
     if (m_pwm_enable)
     {
         debug("m_pwm_enable modify\n");
+        // hw_timer_set_prescaler
+        if (prescaler != m_hw_prescaler)
+        {
+            hw_timer_set_prescaler(get_hw_id(), prescaler);
+        }
         if (source != m_hw_source)
         {
             hw_timer_set_clk(get_hw_id(), source);
@@ -247,7 +266,7 @@ void Pwmout_instance::Impl::setup_pwm()
     set_pin_pwm();
     timer_config timer_cfg = {
         .clk_src = source,
-        .prescaler = 0,
+        .prescaler = prescaler,
         .mode = HW_TIMER_MODE_TIMER,
         .timer =
             {

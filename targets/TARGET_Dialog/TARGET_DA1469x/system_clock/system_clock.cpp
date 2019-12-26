@@ -1,3 +1,4 @@
+#include "mbed.h"
 extern "C"
 {
 #include "default_config.h"
@@ -8,7 +9,6 @@ extern "C"
 
 #include "system_clock.h"
 #include "gsl/gsl"
-#include "mbed.h"
 #include "mbed_debug.h"
 
 using namespace gsl;

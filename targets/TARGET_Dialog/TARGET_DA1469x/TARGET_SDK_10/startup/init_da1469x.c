@@ -24,7 +24,7 @@
 #include "qspi_automode.h"
 // #include "sys_tcs.h"
 // #include "sys_trng.h"
-#include "low_level_clock_da1469x.h"
+#include "system_clock.h"
 #define DEFAULT_CHARGER_TEST_CTRL_REG   0x0F81
 
 #if dg_configUSE_CLOCK_MGR

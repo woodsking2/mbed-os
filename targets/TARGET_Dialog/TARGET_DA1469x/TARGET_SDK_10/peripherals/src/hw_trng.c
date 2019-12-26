@@ -11,7 +11,7 @@
  *
  ****************************************************************************************
  */
-
+#include "default_config.h"
 #if dg_configUSE_HW_TRNG
 
 #include <hw_trng.h>

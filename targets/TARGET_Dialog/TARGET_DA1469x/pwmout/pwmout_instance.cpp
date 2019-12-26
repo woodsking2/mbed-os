@@ -53,8 +53,7 @@ tuple<HW_TIMER_CLK_SRC, uint16_t, uint16_t, uint8_t> Pwmout_instance::Impl::calc
     float frequency{};
     float duty_cycle{};
     int source_clock{};
-    int prescaler{1};
-    float multiple{};
+    int prescaler{1};    
     Expects(m_period <= 2.f && m_period >= 1.f / 16000000.f);
     if (m_period >= 1.f / (16 * 1024))
     {

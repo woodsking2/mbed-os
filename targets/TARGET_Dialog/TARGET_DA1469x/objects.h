@@ -33,4 +33,7 @@ struct pwmout_s
 {
     void* instance;
 };
-
+struct trng_s
+{
+    void* instance;
+};

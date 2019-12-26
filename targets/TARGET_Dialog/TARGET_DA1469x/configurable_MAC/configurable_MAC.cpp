@@ -4,6 +4,7 @@
 #include "mbed_critical.h"
 #include "mbed_debug.h"
 #include <algorithm>
+#include "application.h"
 extern "C"
 {
 #include "default_config.h"
@@ -161,6 +162,7 @@ Configurable_MAC::Impl::Impl() = default;
 
 void Configurable_MAC::Impl::initialize()
 {
+
     uint32_t cmac_addr_code = (uint32_t)&cmi_fw_dst_addr;
     uint32_t cmac_addr_data = cmac_addr_code & 0x0007fffc;
     uint32_t cmac_addr_end = (uint32_t)&__cmi_section_end__;
@@ -203,6 +205,8 @@ void Configurable_MAC::Impl::initialize()
     cmac_mbox_tx = (struct cmac_mbox *)CMAC_SYM_MBOX_TX;
 
     /* Update CMAC configuration */
+    auto address = Application::get_instance().get_address();
+    memcpy(cmac_config->ble_bd_address, address.data(), address.size());
     cmac_config->lp_clock_freq = 0;
     cmac_config->lp_clock_drift = 500;
 

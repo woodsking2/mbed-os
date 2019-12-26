@@ -9718,6 +9718,7 @@
             "SLEEP",
             "INTERRUPTIN",
             "RTC",
+            "TRNG",
             "PWMOUT",
             "I2C"
         ],

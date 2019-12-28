@@ -19,7 +19,15 @@ class System_clock final
     std::unique_ptr<Impl> m_impl;
 
   public:
+    enum class Clock
+    {
+        xtal,
+        pll,
+    };
     static System_clock &get_instance();
     void initialize();
+    void set(Clock clock);
+    void xtal_ready();
+    void pll_ready();
 };
 #endif

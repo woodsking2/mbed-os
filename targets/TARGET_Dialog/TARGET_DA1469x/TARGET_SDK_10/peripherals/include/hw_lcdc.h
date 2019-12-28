@@ -579,7 +579,7 @@ __STATIC_INLINE void hw_lcdc_set_bg_color(uint8_t red, uint8_t green, uint8_t bl
  */
 __STATIC_INLINE void hw_lcdc_set_parallel_iface(HW_LCDC_PAR_IF iface)
 {
-        REG_SETF(LCDC, LCDC_GPIO_REG, LCDC_PARIF_SEL, iface = HW_LCDC_PAR_IF_JDI ? 0 : 1);
+        REG_SETF(LCDC, LCDC_GPIO_REG, LCDC_PARIF_SEL, iface);
 }
 
 /**
@@ -786,7 +786,7 @@ void hw_lcdc_mipi_cfg_out(HW_LCDC_MIPI_CFG cfg);
  */
 __STATIC_INLINE HW_LCDC_MIPI_CFG hw_lcdc_get_mipi_cfg(void)
 {
-        return LCDC->LCDC_DBIB_CFG_REG;
+        return (HW_LCDC_MIPI_CFG)(LCDC->LCDC_DBIB_CFG_REG);
 }
 
 /**

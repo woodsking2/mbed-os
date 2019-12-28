@@ -5,6 +5,10 @@ extern "C"
 #include "sdk_defs.h"
 #include "hw_clk.h"
 #include "hw_pdc.h"
+#include "hw_pmu.h"
+#include "hw_otpc.h"
+#include "hw_qspi.h"
+#include "qspi_automode.h"
 }
 
 #include "system_clock.h"
@@ -14,15 +18,13 @@ extern "C"
 using namespace gsl;
 using namespace std;
 using namespace mbed;
+using namespace rtos;
 namespace
 {
 __RETAINED uint32_t xtal32_pdc_entry;
-volatile bool xtal32m_settled = false;
-__RETAINED_CODE bool cm_poll_xtalm_ready(void)
-{
-    return xtal32m_settled;
-}
-static uint32_t get_pdc_xtal32m_entry(void)
+volatile bool xtal32m_settled;
+events::EventQueue *high_prio_event;
+uint32_t get_pdc_xtal32m_entry(void)
 {
     auto index = hw_find_pdc_entry(HW_PDC_TRIG_SELECT_PERIPHERAL, HW_PDC_PERIPH_TRIG_ID_TIMER2, HW_PDC_MASTER_CM33, HW_PDC_LUT_ENTRY_EN_XTAL);
     if (index != HW_PDC_INVALID_LUT_INDEX)
@@ -73,24 +75,228 @@ void enable_xtalm()
     }
     GLOBAL_INT_RESTORE();
 }
+
+/**
+ * \brief Get the CPU clock frequency in MHz
+ *
+ * \param[in] clk The system clock
+ * \param[in] div The HCLK divider
+ *
+ * \return The clock frequency
+ */
+uint32_t get_clk_freq(sys_clk_t clk, ahb_div_t div)
+{
+    sys_clk_t clock = clk;
+
+    if (clock == sysclk_RC32)
+    {
+        clock = sysclk_XTAL32M;
+    }
+
+    return (16 >> div) * clock;
+}
+/**
+ * \brief Adjust OTP access timings according to the AHB clock frequency.
+ *
+ * \warning In mirrored mode, the OTP access timings are left unchanged since the system is put to
+ *          sleep using the RC32M clock and the AHB divider set to 1, which are the same settings
+ *          that the system runs after a power-up or wake-up!
+ */
+__RETAINED_CODE void adjust_otp_access_timings(sys_clk_t clk, ahb_div_t div)
+{
+#if (dg_configUSE_HW_OTPC == 1)
+    uint32_t clk_freq{};
+
+    if (hw_otpc_is_active())
+    {
+        clk_freq = get_clk_freq(clk, div);
+
+        hw_otpc_set_speed(static_cast<HW_OTPC_CLK_FREQ>(hw_otpc_convert_sys_clk_mhz(clk_freq)));
+    }
+#endif
+}
+
 } // namespace
 class System_clock::Impl
 {
   private:
+    System_clock::Clock m_clock;
+    volatile bool pll_locked;
+    HW_PMU_1V2_VOLTAGE vdd_voltage;
+    ahb_div_t m_hw_ahb_div;
+    Semaphore m_pll_sem;
+
     void low_power_clock_initialize();
+    void enable_pll();
+    void wait_pll_lock();
+    void switch_to_pll(void);
+    sys_clk_t get_hw_clock();
 
   public:
+    Impl();
     void initialize();
+    void set(System_clock::Clock clock);
+    void xtal_ready();
+    void pll_ready();
 };
+sys_clk_t System_clock::Impl::get_hw_clock()
+{
+    switch (m_clock)
+    {
+    case System_clock::Clock::xtal:
+        return sysclk_XTAL32M;
+    case System_clock::Clock::pll:
+        return sysclk_PLL96;
+    }
+    Ensures(false);
+    return sysclk_XTAL32M;
+}
+void System_clock::Impl::switch_to_pll(void)
+{
+    if (hw_clk_get_sysclk() == SYS_CLK_IS_XTAL32M)
+    {
+        // Slow --> fast clock switch
+        adjust_otp_access_timings(get_hw_clock(), m_hw_ahb_div); // Adjust OTP timings
+        qspi_automode_sys_clock_cfg(sysclk_PLL96);
 
+        /*
+         * If ultra-fast wake-up mode is used, make sure that the startup state
+         * machine is finished and all power regulation is in order.
+         */
+        while (REG_GETF(CRG_TOP, SYS_STAT_REG, POWER_IS_UP) == 0)
+        {
+            __NOP();
+        }
+
+        /*
+         * Wait for LDO to be OK. Core voltage may have been changed from 0.9V to
+         * 1.2V in order to switch system clock to PLL
+         */
+        while ((REG_GETF(CRG_TOP, ANA_STATUS_REG, LDO_CORE_OK) == 0) && (REG_GETF(DCDC, DCDC_STATUS1_REG, DCDC_VDD_AVAILABLE) == 0))
+        {
+            __NOP();
+        }
+
+        hw_clk_set_sysclk(SYS_CLK_IS_PLL); // Set PLL as sys_clk
+    }
+}
+void System_clock::Impl::xtal_ready()
+{
+    debug("xtal_ready\n");
+    //     if (sysclk != sysclk_LP)
+    //     {
+    //         // Restore system clocks. xtal32m_rdy_cnt is updated in  cm_sys_clk_sleep()
+    //         cm_sys_clk_sleep(false);
+
+    // #ifdef OS_FREERTOS
+    //         if (xEventGroupCM_xtal != NULL)
+    //         {
+    //             OS_BASE_TYPE xHigherPriorityTaskWoken, xResult;
+
+    //             xResult = xtal32m_is_ready(&xHigherPriorityTaskWoken);
+
+    //             if (xResult != OS_FAIL)
+    //             {
+    //                 /*
+    //                  * If xHigherPriorityTaskWoken is now set to pdTRUE then a context
+    //                  * switch should be requested.
+    //                  */
+    //                 OS_EVENT_YIELD(xHigherPriorityTaskWoken);
+    //             }
+    //         }
+    // #endif
+    //     }
+}
+void System_clock::Impl::pll_ready()
+{
+    debug("pll_ready\n");
+    ASSERT_WARNING(hw_clk_is_pll_locked());
+
+    pll_locked = true;
+
+    Ensures(m_clock == Clock::pll);
+    switch_to_pll();
+    m_pll_sem.release();
+    // if (xEventGroupCM_xtal != NULL)
+    // {
+    //     OS_BASE_TYPE xHigherPriorityTaskWoken, xResult;
+
+    //     xResult = pll_is_locked(&xHigherPriorityTaskWoken);
+
+    //     if (xResult != OS_FAIL)
+    //     {
+    //         /* If xHigherPriorityTaskWoken is now set to pdTRUE then a context
+    //          * switch should be requested. */
+    //         OS_EVENT_YIELD(xHigherPriorityTaskWoken);
+    //     }
+    // }
+}
+void System_clock::Impl::enable_pll()
+{
+    if (hw_clk_is_pll_locked())
+    {
+        pll_locked = true;
+    }
+    else if (hw_clk_is_enabled_sysclk(SYS_CLK_IS_PLL) == false)
+    {
+        ASSERT_WARNING(!pll_locked);
+
+        HW_PMU_1V2_RAIL_CONFIG rail_config;
+        hw_pmu_get_1v2_active_config(&rail_config);
+
+        // PLL cannot be powered by retention LDO
+        ASSERT_WARNING(rail_config.current == HW_PMU_1V2_MAX_LOAD_50 || rail_config.src_type == HW_PMU_SRC_TYPE_DCDC_HIGH_EFFICIENCY);
+
+        vdd_voltage = rail_config.voltage;
+        if (vdd_voltage != HW_PMU_1V2_VOLTAGE_1V2)
+        {
+            // VDD voltage must be set to 1.2V prior to switching clock to PLL
+            HW_PMU_ERROR_CODE error_code;
+            error_code = hw_pmu_1v2_onwakeup_set_voltage(HW_PMU_1V2_VOLTAGE_1V2);
+            ASSERT_WARNING(error_code == HW_PMU_ERROR_NOERROR);
+        }
+
+        hw_clk_enable_sysclk(SYS_CLK_IS_PLL); // Turn on PLL
+        DBG_SET_HIGH(CLK_MGR_USE_TIMING_DEBUG, CLKDBG_PLL_ON);
+    }
+}
+void System_clock::Impl::wait_pll_lock()
+{
+    m_pll_sem.acquire();
+}
+System_clock::Impl::Impl() : m_clock(System_clock::Clock::xtal)
+{
+}
+void System_clock::Impl::set(System_clock::Clock clock)
+{
+    if (clock == m_clock)
+    {
+        return;
+    }
+    m_clock = clock;
+    if (clock == System_clock::Clock::pll)
+    {
+        debug("enable pll\n");
+        // pll 需要先开启32m
+        enable_pll();
+        wait_pll_lock();
+        debug("pll ok\n");
+    }
+}
 void System_clock::Impl::low_power_clock_initialize()
 {
-    // debug("low_power_clock_initialize\n");
     hw_clk_set_lpclk(LP_CLK_IS_XTAL32K);
 }
 void System_clock::Impl::initialize()
 {
-    // debug("System_clock initialize\n");
+    // ahbclk = cm_ahb_get_clock_divider();
+    // apbclk = cm_apb_get_clock_divider();
+    m_hw_ahb_div = hw_clk_get_hclk_div();
+
+    high_prio_event = mbed_highprio_event_queue();
+    HW_PMU_1V2_RAIL_CONFIG rail_config;
+    hw_pmu_get_1v2_active_config(&rail_config);
+    vdd_voltage = rail_config.voltage;
     hw_clk_disable_sysclk(SYS_CLK_IS_RC32);
     auto result = mbed_highprio_event_queue()->call_in(dg_configXTAL32K_SETTLE_TIME, callback(this, &System_clock::Impl::low_power_clock_initialize));
     Ensures(result != 0);
@@ -163,16 +369,12 @@ void low_level_clock_init_set_up()
 {
     // Always enable the XTAL32M
     enable_xtalm();
-    while (!cm_poll_xtalm_ready())
+    while (!xtal32m_settled)
     {
+        __NOP();
         // Wait for XTAL32M to settle
     }
     hw_clk_set_sysclk(SYS_CLK_IS_XTAL32M); // Set XTAL32M as sys_clk
-
-#if (dg_configENABLE_DA1469x_AA_SUPPORT)
-    /* Workaround for bug2522A_050: SW needed to overrule the XTAL calibration state machine */
-    hw_clk_perform_init_rcosc_calibration(); // Perform initial RCOSC calibration
-#endif
 
 #if ((dg_configLP_CLK_SOURCE == LP_CLK_IS_ANALOG) && (dg_configUSE_LP_CLK == LP_CLK_RCX))
     /*
@@ -186,7 +388,10 @@ void low_level_clock_init_set_up()
 }
 void PLL_Lock_Handler()
 {
-    ASSERT_WARNING(REG_GETF(CRG_XTAL, PLL_SYS_STATUS_REG, PLL_LOCK_FINE));
+    if (high_prio_event)
+    {
+        high_prio_event->call(callback(&System_clock::get_instance(), &System_clock::pll_ready));
+    }
 }
 void XTAL32M_Ready_Handler()
 {
@@ -207,30 +412,21 @@ void XTAL32M_Ready_Handler()
              */
         }
     }
-
     xtal32m_settled = true;
-
-    //     if (sysclk != sysclk_LP)
-    //     {
-    //         // Restore system clocks. xtal32m_rdy_cnt is updated in  cm_sys_clk_sleep()
-    //         cm_sys_clk_sleep(false);
-
-    // #ifdef OS_FREERTOS
-    //         if (xEventGroupCM_xtal != NULL)
-    //         {
-    //             OS_BASE_TYPE xHigherPriorityTaskWoken, xResult;
-
-    //             xResult = xtal32m_is_ready(&xHigherPriorityTaskWoken);
-
-    //             if (xResult != OS_FAIL)
-    //             {
-    //                 /*
-    //                  * If xHigherPriorityTaskWoken is now set to pdTRUE then a context
-    //                  * switch should be requested.
-    //                  */
-    //                 OS_EVENT_YIELD(xHigherPriorityTaskWoken);
-    //             }
-    //         }
-    // #endif
-    //     }
+    if (high_prio_event)
+    {
+        high_prio_event->call(callback(&System_clock::get_instance(), &System_clock::xtal_ready));
+    }
+}
+void System_clock::set(Clock clock)
+{
+    m_impl->set(clock);
+}
+void System_clock::xtal_ready()
+{
+    m_impl->xtal_ready();
+}
+void System_clock::pll_ready()
+{
+    m_impl->pll_ready();
 }

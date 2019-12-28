@@ -225,7 +225,7 @@ __STATIC_INLINE void hw_otpc_enter_mode (HW_OTPC_MODE mode)
         volatile HW_OTPC_MODE current_mode;
 
         /*change mode only if new mode is different than the old one*/
-        current_mode = REG_GETF(OTPC, OTPC_MODE_REG, OTPC_MODE_MODE);
+        current_mode = (HW_OTPC_MODE)(REG_GETF(OTPC, OTPC_MODE_REG, OTPC_MODE_MODE));
         if (mode != current_mode)
         {
                 REG_SETF(OTPC, OTPC_MODE_REG, OTPC_MODE_MODE, mode);

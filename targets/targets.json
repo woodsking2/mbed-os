@@ -9694,6 +9694,7 @@
             "CONFIG_USE_BLE",            
             "dg_configUSE_HW_SPI=1",
             "dg_configUSE_HW_I2C=1",
+            "dg_configUSE_HW_LCDC=1",
             "dg_configIMAGE_SETUP=DEVELOPMENT_MODE"          
         ],
         "device_has": [

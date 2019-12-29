@@ -46,7 +46,7 @@ int i2c_start(i2c_t *obj)
 {
     auto instance = reinterpret_cast<I2c_instance *>(obj->instance);
     Expects(instance);
-    instance->start();
+    return instance->start();
 }
 
 /** Send STOP command
@@ -57,7 +57,7 @@ int i2c_stop(i2c_t *obj)
 {
     auto instance = reinterpret_cast<I2c_instance *>(obj->instance);
     Expects(instance);
-    instance->stop();
+    return instance->stop();
 }
 
 /** Blocking reading data

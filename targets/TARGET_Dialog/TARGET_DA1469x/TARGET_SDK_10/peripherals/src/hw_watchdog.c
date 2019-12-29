@@ -89,8 +89,7 @@ __RETAINED_CODE void hw_watchdog_handle_int(unsigned long *exception_args)
         CRG_TOP->PMU_CTRL_REG = pmu_ctrl_reg;
 
 #if (dg_configIMAGE_SETUP == DEVELOPMENT_MODE)
-#warning debug
-        // hw_watchdog_freeze();                           // Stop WDOG
+         hw_watchdog_freeze();                           // Stop WDOG
 
         ENABLE_DEBUGGER;
 

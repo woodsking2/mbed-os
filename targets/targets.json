@@ -9692,6 +9692,7 @@
             "MBED_MPU_CUSTOM",
             "MBED_TICKLESS",
             "CONFIG_USE_BLE",            
+            "BLACKGROUND",
             "dg_configUSE_HW_SPI=1",
             "dg_configUSE_HW_I2C=1",
             "dg_configUSE_HW_LCDC=1",

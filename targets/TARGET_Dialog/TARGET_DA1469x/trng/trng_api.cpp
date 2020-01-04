@@ -77,7 +77,7 @@ int trng_get_bytes(trng_t *obj, uint8_t *output, size_t length, size_t *output_l
         //     debug("%d ", value);
         // }
         // debug("\n");
-        debug("generated_count %d fifo_byte:%d %d\n", generated_count, fifo_byte, *fifo.data());
+        // debug("generated_count %d fifo_byte:%d %d\n", generated_count, fifo_byte, *fifo.data());
         memcpy(&output[generated_count], fifo.data(), fifo_byte);
         generated_count += fifo_byte;
     } while (generated_count < length);

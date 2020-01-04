@@ -671,7 +671,7 @@ bool hw_lcdc_set_layer(bool enable, const hw_lcdc_layer_t *layer)
                 set_layer_start(sx, sy);
                 set_layer_offset_dma_prefetch(offset, layer->dma_prefetch_lvl);
                 set_layer_size(szx, szy);
-                set_layer_resolution(resx, resy);
+                set_layer_resolution(resx, resy);                
                 /* Permit change of stride only if continuous mode is off */
                 if (!REG_GETF(LCDC, LCDC_MODE_REG, LCDC_MODE_EN)) {
                         set_layer_stride(stride);

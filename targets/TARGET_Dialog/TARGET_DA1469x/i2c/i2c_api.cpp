@@ -1,6 +1,7 @@
 #include "i2c_api.h"
 #include "gsl/gsl"
 #include "i2c_instance.h"
+#include "mbed_debug.h"
 extern "C"
 {
 #include "default_config.h"
@@ -25,7 +26,14 @@ void i2c_init(i2c_t *obj, PinName sda, PinName scl)
     Expects(instance);
     obj->instance = instance;
 }
-
+void i2c_deinit(i2c_t *obj)
+{
+    debug("i2c_deinit\n");
+    auto instance = reinterpret_cast<I2c_instance *>(obj->instance);
+    Expects(instance);
+    delete instance;
+    obj->instance = 0;
+}
 /** Configure the I2C frequency
  *
  *  @param obj The I2C object

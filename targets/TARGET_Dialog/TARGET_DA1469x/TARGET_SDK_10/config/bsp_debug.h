@@ -47,7 +47,7 @@
  * \bsp_default_note{\bsp_config_option_app,}
  */
 #ifndef dg_configENABLE_CMAC_DEBUGGER
-#define dg_configENABLE_CMAC_DEBUGGER           (1)
+#define dg_configENABLE_CMAC_DEBUGGER           (0)
 #endif
 
 /**

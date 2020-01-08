@@ -1,5 +1,6 @@
 #include "gpio_api.h"
 #include "gsl/gsl"
+#include "gpio_power.h"
 extern "C"
 {
 #include "default_config.h"
@@ -69,6 +70,7 @@ void gpio_mode(gpio_t *obj, PinMode mode)
         break;
     }
     hw_gpio_set_pin_function(PinName_to_port(obj->pin), PinName_to_pin(obj->pin), hw_mode, HW_GPIO_FUNC_GPIO);
+    set_gpio_power(obj->pin);
     hw_gpio_pad_latch_enable(PinName_to_port(obj->pin), PinName_to_pin(obj->pin));
     hw_gpio_pad_latch_disable(PinName_to_port(obj->pin), PinName_to_pin(obj->pin));
 }
@@ -118,6 +120,7 @@ void gpio_write(gpio_t *obj, int value)
     hw_sys_pd_com_enable();
     auto _ = finally([&]() { hw_sys_pd_com_disable(); });
     hw_gpio_set_pin_function(PinName_to_port(obj->pin), PinName_to_pin(obj->pin), HW_GPIO_MODE_OUTPUT, HW_GPIO_FUNC_GPIO);
+    set_gpio_power(obj->pin);
     if (value)
     {
         hw_gpio_set_active(PinName_to_port(obj->pin), PinName_to_pin(obj->pin));

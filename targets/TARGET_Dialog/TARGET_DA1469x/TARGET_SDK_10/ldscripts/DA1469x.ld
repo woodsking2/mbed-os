@@ -59,7 +59,7 @@
                 RAM (rx) : ORIGIN = CODE_BASE_ADDRESS, LENGTH = CODE_SZ
         }
 #elif (dg_configCODE_LOCATION == NON_VOLATILE_IS_FLASH)
-        #define CODE_BASE_ADDRESS               (0x0)   /* Remapped address will be at any offset in
+        #define CODE_BASE_ADDRESS               (0)   /* Remapped address will be at any offset in
                                                                 QSPI (0x16000000) according to the image header  */
         #define CODE_SZ                         (CODE_SIZE)
         #define RAM_BASE_ADDRESS                (0x20000000 + IVT_AREA_OVERHEAD)

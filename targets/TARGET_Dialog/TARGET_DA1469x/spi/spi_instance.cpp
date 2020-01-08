@@ -3,6 +3,7 @@
 #include "gsl/gsl"
 #include "spi_manager.h"
 #include "DigitalOut.h"
+#include "gpio_power.h"
 extern "C"
 {
 #include "default_config.h"
@@ -71,30 +72,30 @@ void Spi_instance::Impl::initialize_hw()
 }
 int Spi_instance::Impl::write(int value)
 {
-    hw_sys_pd_com_enable();
-    initialize_hw();
+    // hw_sys_pd_com_enable();
+    // initialize_hw();
     m_ssel.write(0);
-    hw_gpio_pad_latch_enable(PinName_to_port(m_sclk), PinName_to_pin(m_sclk));
-    if (m_miso != NC)
-    {
-        hw_gpio_pad_latch_enable(PinName_to_port(m_miso), PinName_to_pin(m_miso));
-    }
-    if (m_mosi != NC)
-    {
-        hw_gpio_pad_latch_enable(PinName_to_port(m_mosi), PinName_to_pin(m_mosi));
-    }
+    // hw_gpio_pad_latch_enable(PinName_to_port(m_sclk), PinName_to_pin(m_sclk));
+    // if (m_miso != NC)
+    // {
+    //     hw_gpio_pad_latch_enable(PinName_to_port(m_miso), PinName_to_pin(m_miso));
+    // }
+    // if (m_mosi != NC)
+    // {
+    //     hw_gpio_pad_latch_enable(PinName_to_port(m_mosi), PinName_to_pin(m_mosi));
+    // }
     auto _ = finally([&]() {
         m_ssel.write(1);
-        hw_gpio_pad_latch_disable(PinName_to_port(m_sclk), PinName_to_pin(m_sclk));
-        if (m_miso != NC)
-        {
-            hw_gpio_pad_latch_disable(PinName_to_port(m_miso), PinName_to_pin(m_miso));
-        }
-        if (m_mosi != NC)
-        {
-            hw_gpio_pad_latch_disable(PinName_to_port(m_mosi), PinName_to_pin(m_mosi));
-        }
-        hw_sys_pd_com_disable();
+        // hw_gpio_pad_latch_disable(PinName_to_port(m_sclk), PinName_to_pin(m_sclk));
+        // if (m_miso != NC)
+        // {
+        //     hw_gpio_pad_latch_disable(PinName_to_port(m_miso), PinName_to_pin(m_miso));
+        // }
+        // if (m_mosi != NC)
+        // {
+        //     hw_gpio_pad_latch_disable(PinName_to_port(m_mosi), PinName_to_pin(m_mosi));
+        // }
+        // hw_sys_pd_com_disable();
     });
     switch (m_bits)
     {
@@ -111,30 +112,30 @@ int Spi_instance::Impl::write(int value)
 }
 int Spi_instance::Impl::write(const char *tx_buffer, int tx_length, char *rx_buffer, int rx_length, char write_fill)
 {
-    hw_sys_pd_com_enable();
-    initialize_hw();
+    // hw_sys_pd_com_enable();
+    // initialize_hw();
     m_ssel.write(0);
-    hw_gpio_pad_latch_enable(PinName_to_port(m_sclk), PinName_to_pin(m_sclk));
-    if (m_miso != NC)
-    {
-        hw_gpio_pad_latch_enable(PinName_to_port(m_miso), PinName_to_pin(m_miso));
-    }
-    if (m_mosi != NC)
-    {
-        hw_gpio_pad_latch_enable(PinName_to_port(m_mosi), PinName_to_pin(m_mosi));
-    }
+    // hw_gpio_pad_latch_enable(PinName_to_port(m_sclk), PinName_to_pin(m_sclk));
+    // if (m_miso != NC)
+    // {
+    //     hw_gpio_pad_latch_enable(PinName_to_port(m_miso), PinName_to_pin(m_miso));
+    // }
+    // if (m_mosi != NC)
+    // {
+    //     hw_gpio_pad_latch_enable(PinName_to_port(m_mosi), PinName_to_pin(m_mosi));
+    // }
     auto _ = finally([&]() {
         m_ssel.write(1);
-        hw_gpio_pad_latch_disable(PinName_to_port(m_sclk), PinName_to_pin(m_sclk));
-        if (m_miso != NC)
-        {
-            hw_gpio_pad_latch_disable(PinName_to_port(m_miso), PinName_to_pin(m_miso));
-        }
-        if (m_mosi != NC)
-        {
-            hw_gpio_pad_latch_disable(PinName_to_port(m_mosi), PinName_to_pin(m_mosi));
-        }
-        hw_sys_pd_com_disable();
+        // hw_gpio_pad_latch_disable(PinName_to_port(m_sclk), PinName_to_pin(m_sclk));
+        // if (m_miso != NC)
+        // {
+        //     hw_gpio_pad_latch_disable(PinName_to_port(m_miso), PinName_to_pin(m_miso));
+        // }
+        // if (m_mosi != NC)
+        // {
+        //     hw_gpio_pad_latch_disable(PinName_to_port(m_mosi), PinName_to_pin(m_mosi));
+        // }
+        // hw_sys_pd_com_disable();
     });
     auto total = (tx_length > rx_length) ? tx_length : rx_length;
     span<uint8_t const> tx{};
@@ -302,13 +303,13 @@ void Spi_instance::Impl::set_format(int bits, int mode, int slave)
     {
         return;
     }
-    // hw_sys_pd_com_enable();
-    // auto _ = finally([&]() { hw_sys_pd_com_disable(); });
+    hw_sys_pd_com_enable();
+    auto _ = finally([&]() { hw_sys_pd_com_disable(); });
     m_bits = bits;
     m_mode = mode;
-    // hw_spi_set_word_size(get_hw_id(), get_hw_word());
-    // hw_spi_set_clock_phase(get_hw_id(), get_hw_phase());
-    // hw_spi_set_clock_polarity(get_hw_id(), get_hw_polarity());
+    hw_spi_set_word_size(get_hw_id(), get_hw_word());
+    hw_spi_set_clock_phase(get_hw_id(), get_hw_phase());
+    hw_spi_set_clock_polarity(get_hw_id(), get_hw_polarity());
 }
 void Spi_instance::Impl::set_frequency(int hz)
 {
@@ -317,9 +318,9 @@ void Spi_instance::Impl::set_frequency(int hz)
         return;
     }
     m_frequency = hz;
-    // hw_sys_pd_com_enable();
-    // auto _ = finally([&]() { hw_sys_pd_com_disable(); });
-    // hw_spi_set_clock_freq(get_hw_id(), get_hw_frequency());
+    hw_sys_pd_com_enable();
+    auto _ = finally([&]() { hw_sys_pd_com_disable(); });
+    hw_spi_set_clock_freq(get_hw_id(), get_hw_frequency());
 }
 
 void Spi_instance::Impl::acquire_pin()
@@ -328,19 +329,22 @@ void Spi_instance::Impl::acquire_pin()
     auto _ = finally([&]() { hw_sys_pd_com_disable(); });
     Expects(m_sclk != NC);
     hw_gpio_set_pin_function(PinName_to_port(m_sclk), PinName_to_pin(m_sclk), HW_GPIO_MODE_OUTPUT, get_clock_func());
+    set_gpio_power(m_sclk);
     hw_gpio_pad_latch_enable(PinName_to_port(m_sclk), PinName_to_pin(m_sclk));
-    hw_gpio_pad_latch_disable(PinName_to_port(m_sclk), PinName_to_pin(m_sclk));
+    // hw_gpio_pad_latch_disable(PinName_to_port(m_sclk), PinName_to_pin(m_sclk));
     if (m_miso != NC)
     {
         hw_gpio_set_pin_function(PinName_to_port(m_miso), PinName_to_pin(m_miso), HW_GPIO_MODE_INPUT, get_miso_func());
+        set_gpio_power(m_miso);
         hw_gpio_pad_latch_enable(PinName_to_port(m_miso), PinName_to_pin(m_miso));
-        hw_gpio_pad_latch_disable(PinName_to_port(m_miso), PinName_to_pin(m_miso));
+        // hw_gpio_pad_latch_disable(PinName_to_port(m_miso), PinName_to_pin(m_miso));
     }
     if (m_mosi != NC)
     {
         hw_gpio_set_pin_function(PinName_to_port(m_mosi), PinName_to_pin(m_mosi), HW_GPIO_MODE_OUTPUT, get_mosi_func());
+        set_gpio_power(m_mosi);
         hw_gpio_pad_latch_enable(PinName_to_port(m_mosi), PinName_to_pin(m_mosi));
-        hw_gpio_pad_latch_disable(PinName_to_port(m_mosi), PinName_to_pin(m_mosi));
+        // hw_gpio_pad_latch_disable(PinName_to_port(m_mosi), PinName_to_pin(m_mosi));
     }
 }
 void Spi_instance::Impl::release_pin()
@@ -361,7 +365,9 @@ void Spi_instance::Impl::release_pin()
 Spi_instance::Impl::Impl(PinName mosi, PinName miso, PinName sclk, PinName ssel)
     : m_type(Spi_manager::get_instance().acquire(mosi, miso, sclk)), m_mosi(mosi), m_miso(miso), m_sclk(sclk), m_ssel(ssel, true), m_frequency(4000000), m_bits(8), m_mode(0), m_slave(0)
 {
-    // hw_sys_pd_com_enable();
+    // debug("Spi_instance::Impl::Impl\n");
+    hw_sys_pd_com_enable();
+    initialize_hw();
     // auto _ = finally([&]() { hw_sys_pd_com_disable(); });
     // acquire_pin();
     // spi_config const config = {
@@ -382,11 +388,12 @@ Spi_instance::Impl::Impl(PinName mosi, PinName miso, PinName sclk, PinName ssel)
 }
 Spi_instance::Impl::~Impl()
 {
-    hw_sys_pd_com_enable();
-    auto _ = finally([&]() { hw_sys_pd_com_disable(); });
+    // hw_sys_pd_com_enable();
+    // auto _ = finally([&]() { hw_sys_pd_com_disable(); });
     hw_spi_deinit(get_hw_id());
     release_pin();
     Spi_manager::get_instance().release(m_type);
+    hw_sys_pd_com_disable();
 }
 
 Spi_instance::Spi_instance(PinName mosi, PinName miso, PinName sclk, PinName ssel) : m_impl(make_unique<Spi_instance::Impl>(mosi, miso, sclk, ssel))

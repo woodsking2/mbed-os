@@ -205,7 +205,7 @@ void Configurable_MAC::Impl::initialize()
     cmac_mbox_tx = (struct cmac_mbox *)CMAC_SYM_MBOX_TX;
 
     /* Update CMAC configuration */
-    auto address = Application::get_instance().get_address();
+    auto address = Application::get_instance<Application>().get_address();
     memcpy(cmac_config->ble_bd_address, address.data(), address.size());
     cmac_config->lp_clock_freq = 0;
     cmac_config->lp_clock_drift = 500;

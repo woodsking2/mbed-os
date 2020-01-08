@@ -4,6 +4,7 @@
 #include "pwmout_manager.h"
 #include <tuple>
 #include <cmath>
+#include "gpio_power.h"
 extern "C"
 {
 #include "default_config.h"
@@ -103,6 +104,7 @@ void Pwmout_instance::Impl::set_pin_gpio(bool value)
     auto _ = finally([&]() { hw_sys_pd_com_disable(); });
     hw_timer_disable(get_hw_id());
     hw_gpio_set_pin_function(PinName_to_port(m_pin), PinName_to_pin(m_pin), HW_GPIO_MODE_OUTPUT, HW_GPIO_FUNC_GPIO);
+    set_gpio_power(m_pin);
     if (value)
     {
         hw_gpio_set_active(PinName_to_port(m_pin), PinName_to_pin(m_pin));
@@ -142,6 +144,7 @@ void Pwmout_instance::Impl::set_pin_pwm()
     auto _ = finally([&]() { hw_sys_pd_com_disable(); });
 
     hw_gpio_set_pin_function(PinName_to_port(m_pin), PinName_to_pin(m_pin), HW_GPIO_MODE_OUTPUT, get_pin_func());
+    set_gpio_power(m_pin);
     hw_gpio_pad_latch_enable(PinName_to_port(m_pin), PinName_to_pin(m_pin));
     hw_gpio_pad_latch_disable(PinName_to_port(m_pin), PinName_to_pin(m_pin));
 }

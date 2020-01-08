@@ -3,6 +3,7 @@
 #include "i2c_manager.h"
 #include "gsl/gsl"
 #include "mbed_debug.h"
+#include "gpio_power.h"
 extern "C"
 {
 #include "default_config.h"
@@ -141,9 +142,11 @@ void I2c_instance::Impl::acquire_pin()
     Expects(m_scl != NC);
     debug("m_sda:%d, m_scl: %d\n", m_sda, m_scl);
     hw_gpio_set_pin_function(PinName_to_port(m_scl), PinName_to_pin(m_scl), HW_GPIO_MODE_OUTPUT, get_clock_func());
+    set_gpio_power(m_scl);
     hw_gpio_pad_latch_enable(PinName_to_port(m_scl), PinName_to_pin(m_scl));
     hw_gpio_pad_latch_disable(PinName_to_port(m_scl), PinName_to_pin(m_scl));
     hw_gpio_set_pin_function(PinName_to_port(m_sda), PinName_to_pin(m_sda), HW_GPIO_MODE_OUTPUT, get_data_func());
+    set_gpio_power(m_sda);
     hw_gpio_pad_latch_enable(PinName_to_port(m_sda), PinName_to_pin(m_sda));
     hw_gpio_pad_latch_disable(PinName_to_port(m_sda), PinName_to_pin(m_sda));
 }

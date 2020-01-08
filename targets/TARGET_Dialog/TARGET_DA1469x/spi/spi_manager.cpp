@@ -23,8 +23,8 @@ class Spi_manager::Impl
         {
         }
         bool operator==(const Spi_pins &a) noexcept
-        {
-            return m_mosi == a.m_miso && m_miso == a.m_miso && m_clk == a.m_clk;
+        {      
+            return m_mosi == a.m_mosi && m_miso == a.m_miso && m_clk == a.m_clk;
         }
     };
     static constexpr auto spi_count = 2;
@@ -45,13 +45,20 @@ Spi_manager::Type Spi_manager::Impl::acquire(PinName mosi, PinName miso, PinName
         return static_cast<Spi_manager::Type>(find_result - m_acquired.begin());
     }
     Spi_pins invalid_pins{};
+    // debug("acqure list\n");
+    // for (auto value : m_acquired)
+    // {
+    //     debug("%d %d %d\n", value.m_mosi, value.m_miso, value.m_clk);
+    // }
     auto const empty_iterator = find(m_acquired.begin(), m_acquired.end(), invalid_pins);
     if (empty_iterator == m_acquired.end())
     {
+#warning debug
         Ensures(false);
         return Spi_manager::Type::spi_1;
     }
     *empty_iterator = pins;
+    // debug("acquire %d\n", empty_iterator - m_acquired.begin());
     return static_cast<Spi_manager::Type>(empty_iterator - m_acquired.begin());
 }
 void Spi_manager::Impl::release(Spi_manager::Type type)
@@ -59,7 +66,18 @@ void Spi_manager::Impl::release(Spi_manager::Type type)
     m_mutex.lock();
     auto _ = finally([&]() { m_mutex.unlock(); });
     Spi_pins invalid_pins{};
+    // debug("release %d\n", (int)type);
+    // debug("release_pre list\n");
+    // for (auto value : m_acquired)
+    // {
+    //     debug("%d %d %d\n", value.m_mosi, value.m_miso, value.m_clk);
+    // }
     m_acquired[static_cast<int>(type)] = invalid_pins;
+    // debug("release list\n");
+    // for (auto value : m_acquired)
+    // {
+    //     debug("%d %d %d\n", value.m_mosi, value.m_miso, value.m_clk);
+    // }
 }
 Spi_manager::Spi_manager() : m_impl(make_unique<Spi_manager::Impl>())
 {

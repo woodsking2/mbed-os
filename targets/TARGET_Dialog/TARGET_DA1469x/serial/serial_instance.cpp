@@ -1,5 +1,6 @@
 #include "serial_instance.h"
 #include "gsl/gsl"
+#include "gpio_power.h"
 extern "C"
 {
 #include "default_config.h"
@@ -259,6 +260,7 @@ void Serial_instance::impl::write(int c)
     Expects(m_tx != NC);
     hw_sys_pd_com_enable();
     hw_gpio_set_pin_function(PinName_to_port(m_tx), PinName_to_pin(m_tx), HW_GPIO_MODE_OUTPUT, get_hw_tx_func());    
+    set_gpio_power(m_tx);
     hw_gpio_pad_latch_enable(PinName_to_port(m_tx), PinName_to_pin(m_tx));
     auto _ = finally([&]() {
         hw_gpio_pad_latch_disable(PinName_to_port(m_tx), PinName_to_pin(m_tx));

@@ -25,7 +25,7 @@
 // #include "sys_tcs.h"
 // #include "sys_trng.h"
 #include "system_clock.h"
-#define DEFAULT_CHARGER_TEST_CTRL_REG   0x0F81
+#define DEFAULT_CHARGER_TEST_CTRL_REG 0x0F81
 
 #if dg_configUSE_CLOCK_MGR
 #include "sys_clock_mgr.h"
@@ -387,11 +387,6 @@ void SystemInitPre(void)
      */
     ASSERT_WARNING_UNINIT(is_compatible_chip_version());
 
-    /*
-     * Ensure 4-byte alignment for all elements of each entry in the Copy Table.
-     * If any of the assertions below hits, please correct your linker script
-     * file accordingly!
-     */
     if (dg_configIMAGE_SETUP == DEVELOPMENT_MODE)
     {
         uint32_t *p;
@@ -537,7 +532,8 @@ void da1469x_SystemInit(void)
     qspi_automode_init();
 
 #if ((dg_configCODE_LOCATION == NON_VOLATILE_IS_FLASH) && (dg_configEXEC_MODE == MODE_IS_CACHED))
-    hw_cache_enable(cache_len);
+    // hw_cache_enable(cache_len);
+    hw_cache_enable(16);
 #endif
 
     /* Already up in SystemInitPre()
@@ -575,27 +571,27 @@ void da1469x_SystemInit(void)
     /* Default settings to be used if no CS setting is available*/
     CHARGER->CHARGER_TEST_CTRL_REG = DEFAULT_CHARGER_TEST_CTRL_REG;
 
-//     /*
-//      * Apply tcs settings.
-//      * They need to be re-applied when the blocks they contain are enabled.
-//      * PD_MEM is by default enabled.
-//      * PD_AON settings are applied by the booter
-//      */
-//     sys_tcs_apply_reg_pairs(SYS_TCS_GROUP_PD_MEM);
-//     sys_tcs_apply_reg_pairs(SYS_TCS_GROUP_PD_PER);
-//     /* In non baremetal apps PD_COMM will be opened by the  power manager */
-// #ifdef OS_BAREMETAL
-//     hw_sys_pd_com_enable();
-//     sys_tcs_apply_reg_pairs(SYS_TCS_GROUP_PD_COMM);
-// #endif
-//     sys_tcs_apply_reg_pairs(SYS_TCS_GROUP_PD_SYS);
-//     sys_tcs_apply_reg_pairs(SYS_TCS_GROUP_PD_TMR);
+    //     /*
+    //      * Apply tcs settings.
+    //      * They need to be re-applied when the blocks they contain are enabled.
+    //      * PD_MEM is by default enabled.
+    //      * PD_AON settings are applied by the booter
+    //      */
+    //     sys_tcs_apply_reg_pairs(SYS_TCS_GROUP_PD_MEM);
+    //     sys_tcs_apply_reg_pairs(SYS_TCS_GROUP_PD_PER);
+    //     /* In non baremetal apps PD_COMM will be opened by the  power manager */
+    // #ifdef OS_BAREMETAL
+    //     hw_sys_pd_com_enable();
+    //     sys_tcs_apply_reg_pairs(SYS_TCS_GROUP_PD_COMM);
+    // #endif
+    //     sys_tcs_apply_reg_pairs(SYS_TCS_GROUP_PD_SYS);
+    //     sys_tcs_apply_reg_pairs(SYS_TCS_GROUP_PD_TMR);
 
     /*
      * Apply custom trim settings which don't require the respective block to be enabled
      */
-//     sys_tcs_apply_custom_values(SYS_TCS_GROUP_GP_ADC_SINGLE_MODE, sys_tcs_custom_values_system_cb, NULL);
-//     sys_tcs_apply_custom_values(SYS_TCS_GROUP_GP_ADC_DIFF_MODE, sys_tcs_custom_values_system_cb, NULL);
+    //     sys_tcs_apply_custom_values(SYS_TCS_GROUP_GP_ADC_SINGLE_MODE, sys_tcs_custom_values_system_cb, NULL);
+    //     sys_tcs_apply_custom_values(SYS_TCS_GROUP_GP_ADC_DIFF_MODE, sys_tcs_custom_values_system_cb, NULL);
 
     /*
      * Apply preferred settings on top of tcs settings.
@@ -604,46 +600,46 @@ void da1469x_SystemInit(void)
     hw_sys_set_preferred_values(HW_PD_SYS);
     hw_sys_set_preferred_values(HW_PD_TMR);
 
-// #if dg_configUSE_CLOCK_MGR
-//     cm_clk_init_low_level_internal();
-// #else
-//     hw_clk_xtalm_configure();
-//     if (dg_configXTAL32M_SETTLE_TIME_IN_USEC != 0)
-//     {
-//         hw_clk_set_xtalm_settling_time(XTAL32M_USEC_TO_256K_CYCLES(dg_configXTAL32M_SETTLE_TIME_IN_USEC) / 8, false);
-//     }
-// #endif
+    // #if dg_configUSE_CLOCK_MGR
+    //     cm_clk_init_low_level_internal();
+    // #else
+    //     hw_clk_xtalm_configure();
+    //     if (dg_configXTAL32M_SETTLE_TIME_IN_USEC != 0)
+    //     {
+    //         hw_clk_set_xtalm_settling_time(XTAL32M_USEC_TO_256K_CYCLES(dg_configXTAL32M_SETTLE_TIME_IN_USEC) / 8, false);
+    //     }
+    // #endif
     low_level_clock_init_initialize();
 
     configure_pdc();
 
     low_level_clock_init_set_up();
-//     nortos_clk_setup();
-// #if dg_configUSE_CLOCK_MGR
-//     // Always enable the XTAL32M
-//     cm_enable_xtalm();
-//     while (!cm_poll_xtalm_ready())
-//         ;                                  // Wait for XTAL32M to settle
-//     hw_clk_set_sysclk(SYS_CLK_IS_XTAL32M); // Set XTAL32M as sys_clk
+    //     nortos_clk_setup();
+    // #if dg_configUSE_CLOCK_MGR
+    //     // Always enable the XTAL32M
+    //     cm_enable_xtalm();
+    //     while (!cm_poll_xtalm_ready())
+    //         ;                                  // Wait for XTAL32M to settle
+    //     hw_clk_set_sysclk(SYS_CLK_IS_XTAL32M); // Set XTAL32M as sys_clk
 
-// #if (dg_configENABLE_DA1469x_AA_SUPPORT)
-//     /* Workaround for bug2522A_050: SW needed to overrule the XTAL calibration state machine */
-//     hw_clk_perform_init_rcosc_calibration(); // Perform initial RCOSC calibration
-// #endif
+    // #if (dg_configENABLE_DA1469x_AA_SUPPORT)
+    //     /* Workaround for bug2522A_050: SW needed to overrule the XTAL calibration state machine */
+    //     hw_clk_perform_init_rcosc_calibration(); // Perform initial RCOSC calibration
+    // #endif
 
-// #if ((dg_configLP_CLK_SOURCE == LP_CLK_IS_ANALOG) && (dg_configUSE_LP_CLK == LP_CLK_RCX))
-//     /*
-//      * Note: If the LP clock is the RCX then we have to wait for the XTAL32M to settle
-//      *       since we need to estimate the frequency of the RCX before continuing
-//      *       (calibration procedure).
-//      */
-//     cm_rcx_calibrate();
-//     hw_clk_set_lpclk(LP_CLK_IS_RCX); // Set RCX as the LP clock
-// #endif
-// #else
-//     /* perform clock initialization here, as there is no clock manager to do it later for us */
-//     nortos_clk_setup();
-// #endif
+    // #if ((dg_configLP_CLK_SOURCE == LP_CLK_IS_ANALOG) && (dg_configUSE_LP_CLK == LP_CLK_RCX))
+    //     /*
+    //      * Note: If the LP clock is the RCX then we have to wait for the XTAL32M to settle
+    //      *       since we need to estimate the frequency of the RCX before continuing
+    //      *       (calibration procedure).
+    //      */
+    //     cm_rcx_calibrate();
+    //     hw_clk_set_lpclk(LP_CLK_IS_RCX); // Set RCX as the LP clock
+    // #endif
+    // #else
+    //     /* perform clock initialization here, as there is no clock manager to do it later for us */
+    //     nortos_clk_setup();
+    // #endif
 
     /* Calculate pll_min_current value
      * Apply value to PLL_SYS_CTRL3_REG
@@ -671,7 +667,7 @@ void da1469x_SystemInit(void)
 #else
     hw_bod_deactivate();
 #endif
-    hw_sys_setup_retmem(); 
+    hw_sys_setup_retmem();
     hw_sys_set_cache_retained();
 }
 

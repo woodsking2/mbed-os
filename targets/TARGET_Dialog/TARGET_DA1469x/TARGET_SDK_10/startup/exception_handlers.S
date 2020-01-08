@@ -280,7 +280,7 @@ HardFault_Handler_Custom:
                 b       stack_check
 HF_stacking_using_MSP:
                 mrs     r0, msp
-stack_check:
+stack_check:                
                 /* If address 0x0 is remapped to SYSRAM (SYS_CTRL_REG[REMAP_ADR0] is 0x3),
                  * check if SP (r0) belongs to one of the following ranges:
                  * - [0x0, 0x80000)

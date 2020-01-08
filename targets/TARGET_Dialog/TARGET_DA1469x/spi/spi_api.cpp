@@ -3,6 +3,7 @@
 #include "gsl/gsl"
 #include "spi_manager.h"
 #include "spi_instance.h"
+#include "mbed_debug.h"
 
 using namespace gsl;
 using namespace std;
@@ -40,6 +41,7 @@ void spi_init(spi_t *obj, PinName mosi, PinName miso, PinName sclk, PinName ssel
  */
 void spi_free(spi_t *obj)
 {
+    debug("spi_free\n");
     auto instance = reinterpret_cast<Spi_instance *>(obj->instance);
     Expects(instance);
     delete instance;

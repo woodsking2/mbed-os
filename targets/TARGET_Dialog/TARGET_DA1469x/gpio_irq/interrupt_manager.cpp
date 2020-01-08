@@ -60,11 +60,11 @@ void Interrupt_manager::Impl::set_hw_interrupt(PinName pin, bool pin_state)
 void Interrupt_manager::Impl::lock()
 {
     hw_wkup_unregister_interrupts();
-    m_mutex.lock();
+    // m_mutex.lock();
 }
 void Interrupt_manager::Impl::unlock()
 {
-    m_mutex.unlock();
+    // m_mutex.unlock();
     enable_interrupt();
 }
 void Interrupt_manager::Impl::interrupt_from_isr()

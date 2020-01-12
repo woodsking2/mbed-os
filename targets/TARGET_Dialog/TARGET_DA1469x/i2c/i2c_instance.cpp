@@ -143,7 +143,7 @@ void I2c_instance::Impl::acquire_pin()
     // auto _ = finally([&]() { hw_sys_pd_com_disable(); });
     Expects(m_sda != NC);
     Expects(m_scl != NC);
-    debug("m_sda:%d, m_scl: %d\n", m_sda, m_scl);
+    // debug("m_sda:%d, m_scl: %d\n", m_sda, m_scl);
     hw_gpio_set_pin_function(PinName_to_port(m_scl), PinName_to_pin(m_scl), HW_GPIO_MODE_OUTPUT, get_clock_func());
     set_gpio_power(m_scl);
     hw_gpio_pad_latch_enable(PinName_to_port(m_scl), PinName_to_pin(m_scl));
@@ -182,7 +182,7 @@ int I2c_instance::Impl::stop()
 }
 int I2c_instance::Impl::read(int address, char *data, int length, int stop)
 {
-    debug("read address %02X, len %d stop %d\n", address, length, stop);
+    // debug("read address %02X, len %d stop %d\n", address, length, stop);
     int addres_7_bit = address >> 1;
     Ensures((addres_7_bit & 0b1111111) == addres_7_bit);
     if (addres_7_bit != m_address)
@@ -208,16 +208,17 @@ int I2c_instance::Impl::read(int address, char *data, int length, int stop)
         flags = HW_I2C_F_ADD_STOP;
     }
     auto read_result = hw_i2c_read_buffer_sync(get_hw_id(), reinterpret_cast<uint8_t *>(data), length, &abort_code, flags);
-    debug("read[%d] %02x\n", read_result, *data);
+    // debug("read[%d] %02x\n", read_result, *data);
     if (HW_I2C_ABORT_NONE != abort_code)
     {
-        debug("read i2c fail[%d]: %d\n", read_result, abort_code);
+        // debug("read i2c fail[%d]: %d\n", read_result, abort_code);
+        return 0;
     }
     return read_result;
 }
 int I2c_instance::Impl::write(int address, const char *data, int length, int stop)
 {
-    debug("write address %02X, len %d stop %d\n", address, length, stop);
+    // debug("write address %02X, len %d stop %d\n", address, length, stop);
     int addres_7_bit = address >> 1;
     Ensures((addres_7_bit & 0b1111111) == addres_7_bit);
     if (addres_7_bit != m_address)
@@ -242,12 +243,13 @@ int I2c_instance::Impl::write(int address, const char *data, int length, int sto
     {
         flags = HW_I2C_F_ADD_STOP;
     }
-    debug("write %02x %02x \n", *data, data[1]);
+    // debug("write %02x %02x \n", *data, data[1]);
     auto write_result = hw_i2c_write_buffer_sync(get_hw_id(), reinterpret_cast<uint8_t const *>(data), length, &abort_code, flags);
-    debug("write reuslt:%d\n", write_result);
+    // debug("write reuslt:%d\n", write_result);
     if (HW_I2C_ABORT_NONE != abort_code)
     {
         debug("write i2c fail[%d]: %d\n", write_result, abort_code);
+        return 0;
     }
     return write_result;
 }

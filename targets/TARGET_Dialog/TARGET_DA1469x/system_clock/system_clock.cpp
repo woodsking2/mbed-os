@@ -209,7 +209,7 @@ void System_clock::Impl::xtal_ready()
 }
 void System_clock::Impl::pll_ready()
 {
-    debug("pll_ready\n");
+    // debug("pll_ready\n");
     ASSERT_WARNING(hw_clk_is_pll_locked());
 
     pll_locked = true;
@@ -276,11 +276,11 @@ void System_clock::Impl::set(System_clock::Clock clock)
     m_clock = clock;
     if (clock == System_clock::Clock::pll)
     {
-        debug("enable pll\n");
+        // debug("enable pll\n");
         // pll 需要先开启32m
         enable_pll();
         wait_pll_lock();
-        debug("pll ok\n");
+        // debug("pll ok\n");
     }
 }
 void System_clock::Impl::low_power_clock_initialize()

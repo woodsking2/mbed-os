@@ -74,6 +74,10 @@ bool Interrupt_instance::Impl::read_pin_state()
 void Interrupt_instance::Impl::triggered()
 {
     auto pin_state = read_pin_state();
+    if (m_event != IRQ_RISE && m_event != IRQ_FALL)
+    {
+        return;
+    }
     auto event_pin_state = gpio_irq_event_to_pin_state(m_event);
     set_hw_interrupt(!pin_state);
     if (event_pin_state == m_set_state)
@@ -87,7 +91,7 @@ void Interrupt_instance::Impl::set_hw_interrupt(bool pin_state)
     // auto hw_event = pin_state_to_hw_event(pin_state);
     m_set_state = pin_state;
     // hw_wkup_gpio_configure_pin(PinName_to_port(m_pin), PinName_to_pin(m_pin), true, hw_event);
-     Interrupt_manager::get_instance().set_hw_interrupt(m_pin, pin_state);
+    Interrupt_manager::get_instance().set_hw_interrupt(m_pin, pin_state);
 }
 void Interrupt_instance::Impl::set_hw_interrupt(gpio_irq_event event)
 {

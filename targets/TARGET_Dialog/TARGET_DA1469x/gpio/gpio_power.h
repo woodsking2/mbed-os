@@ -1,11 +1,16 @@
 #pragma once
 #include "PinNames.h"
 #include "gsl/gsl"
-// enum class Gpio_power
-// {
-//     v33,
-//     v18
-// };
+/**
+ * @brief 
+ * 
+ * @param pin 
+ */
 void set_gpio_power(PinName pin);
 
+/**
+ * @brief 
+ * 
+ * @return gsl::span<PinName const> 
+ */
 gsl::span<PinName const> get_v18_table();

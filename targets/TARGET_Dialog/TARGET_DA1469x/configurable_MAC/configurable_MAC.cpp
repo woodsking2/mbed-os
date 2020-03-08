@@ -4,7 +4,7 @@
 #include "mbed_critical.h"
 #include "mbed_debug.h"
 #include <algorithm>
-#include "application.h"
+// #include "application.h"
 extern "C"
 {
 #include "default_config.h"
@@ -13,13 +13,6 @@ extern "C"
 }
 using namespace std;
 using namespace gsl;
-// #ifndef min
-// #define min(a, b) ((a) < (b) ? (a) : (b))
-// #endif
-
-// #ifndef max
-// #define max(a, b) ((a) > (b) ? (a) : (b))
-// #endif
 
 #define CMAC_SYM_CONFIG ((void *)(0x00818f20 + MEMCTRL->CMI_CODE_BASE_REG))
 #define CMAC_SYM_CONFIG_DYN ((void *)(0x00821af8 + MEMCTRL->CMI_CODE_BASE_REG))
@@ -151,18 +144,26 @@ done:
     }
 }
 } // namespace
-class Configurable_MAC::Impl
+class Configurable_MAC::Impl final : virtual public Nondestructive
 {
   public:
     Impl();
-    void initialize();
-    void write(gsl::span<uint8_t const> data);
+    Configurable_MAC::Result initialize();
+    Configurable_MAC::Result set_address(gsl::span<uint8_t, 6> address);
+    Configurable_MAC::Result write(gsl::span<uint8_t const> data);
+
+  private:
+    bool initialized;
 };
 Configurable_MAC::Impl::Impl() = default;
 
-void Configurable_MAC::Impl::initialize()
+Configurable_MAC::Result Configurable_MAC::Impl::initialize()
 {
-
+    Expects(!initialized);
+    if (initialized)
+    {
+        return Configurable_MAC::Result::initialized;
+    }
     uint32_t cmac_addr_code = (uint32_t)&cmi_fw_dst_addr;
     uint32_t cmac_addr_data = cmac_addr_code & 0x0007fffc;
     uint32_t cmac_addr_end = (uint32_t)&__cmi_section_end__;
@@ -205,8 +206,6 @@ void Configurable_MAC::Impl::initialize()
     cmac_mbox_tx = (struct cmac_mbox *)CMAC_SYM_MBOX_TX;
 
     /* Update CMAC configuration */
-    auto address = Application::get_instance<Application>().get_address();
-    memcpy(cmac_config->ble_bd_address, address.data(), address.size());
     cmac_config->lp_clock_freq = 0;
     cmac_config->lp_clock_drift = 500;
 
@@ -261,9 +260,27 @@ void Configurable_MAC::Impl::initialize()
     NVIC_EnableIRQ(CMAC2SYS_IRQn);
 
     da1469x_cmac_pdc_signal();
+    initialized = true;
+    return Configurable_MAC::Result::success;
 }
-void Configurable_MAC::Impl::write(gsl::span<uint8_t const> data)
+Configurable_MAC::Result Configurable_MAC::Impl::set_address(gsl::span<uint8_t, 6> address)
 {
+    Expects(!initialized);
+    if (initialized)
+    {
+        return Configurable_MAC::Result::initialized;
+    }
+    struct cmac_config *cmac_config = (struct cmac_config *)CMAC_SYM_CONFIG;
+    memcpy(cmac_config->ble_bd_address, address.data(), address.size());
+    return Configurable_MAC::Result::success;
+}
+Configurable_MAC::Result Configurable_MAC::Impl::write(gsl::span<uint8_t const> data)
+{
+    Expects(initialized);
+    if (!initialized)
+    {
+        return Configurable_MAC::Result::uninitialized;
+    }
     int wr_off{};
     int rd_off{};
     int chunk{};
@@ -304,21 +321,24 @@ void Configurable_MAC::Impl::write(gsl::span<uint8_t const> data)
         len -= chunk;
         buf += chunk;
     }
+
+    return Configurable_MAC::Result::success;
 }
 Configurable_MAC::Configurable_MAC() : m_impl(make_unique<Configurable_MAC::Impl>())
 {
 }
 Configurable_MAC::~Configurable_MAC() = default;
-Configurable_MAC &Configurable_MAC::get_instance()
+
+Configurable_MAC::Result Configurable_MAC::initialize()
 {
-    static Configurable_MAC instance;
-    return instance;
+    return m_impl->initialize();
 }
-void Configurable_MAC::initialize()
+Configurable_MAC::Result Configurable_MAC::set_address(gsl::span<uint8_t, 6> address)
 {
-    m_impl->initialize();
+    return m_impl->set_address(address);
 }
-void Configurable_MAC::write(gsl::span<uint8_t const> data)
+
+Configurable_MAC::Result Configurable_MAC::write(gsl::span<uint8_t const> data)
 {
-    m_impl->write(data);
+    return m_impl->write(data);
 }

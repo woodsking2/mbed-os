@@ -18,7 +18,3 @@ void set_gpio_power(PinName pin)
     }
     hw_gpio_configure_pin_power(PinName_to_port(pin), PinName_to_pin(pin), HW_GPIO_POWER_VDD1V8P);
 }
-// Gpio_power get_gpio_power(PinName pin)
-// {
-
-// }

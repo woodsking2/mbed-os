@@ -9669,6 +9669,7 @@
         "supported_toolchains": [
             "GCC_ARM"
         ],
+        "components_add": ["FLASHIAP"],
         "macros_add": [
             "dg_configEXEC_MODE=MODE_IS_CACHED",
             "dg_configUSE_LP_CLK=LP_CLK_32768",
@@ -9698,7 +9699,8 @@
             "dg_configUSE_HW_LCDC=1",
             "NVIC_RAM_VECTOR_ADDRESS=0x20000000",
             "NVIC_NUM_VECTORS=0x200/4",
-            "dg_configIMAGE_SETUP=DEVELOPMENT_MODE"          
+            "dg_configIMAGE_SETUP=DEVELOPMENT_MODE",
+            "dg_configFLASH_MAX_WRITE_SIZE=256"
         ],
         "device_has": [
             "MPU",            
@@ -9711,7 +9713,8 @@
             "RTC",
             "TRNG",
             "PWMOUT",
-            "I2C"
+            "I2C",
+            "FLASH"
         ],
         "features": [
             "BLE",

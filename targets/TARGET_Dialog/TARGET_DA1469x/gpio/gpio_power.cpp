@@ -1,5 +1,6 @@
 #include "gpio_power.h"
 #include <algorithm>
+#include "application.h"
 extern "C"
 {
 #include "default_config.h"
@@ -9,7 +10,7 @@ extern "C"
 using namespace std;
 void set_gpio_power(PinName pin)
 {
-    auto v18_table = get_v18_table();
+    auto v18_table = Application::get_v18_table();
     auto iterator = find(v18_table.begin(), v18_table.end(), pin);
     if (iterator == v18_table.end())
     {

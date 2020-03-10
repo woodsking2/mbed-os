@@ -154,6 +154,7 @@ class Configurable_MAC::Impl final : virtual public Nondestructive
 
   private:
     bool initialized;
+    array<uint8_t, 6> m_address;
 };
 Configurable_MAC::Impl::Impl() = default;
 
@@ -195,8 +196,6 @@ Configurable_MAC::Result Configurable_MAC::Impl::initialize()
     MEMCTRL->CMI_END_REG = cmac_addr_end;
 
     /* Copy CMAC firmware to RAM (9 words of header data, 2nd word has FW size) */
-    // uint32_t fw_size = cmac_fw_area[1];
-    // debug("fw_size:%u\n", fw_size);
     memcpy((void *)cmac_addr_code, &cmac_fw_area[9], cmac_fw_area[1]);
 
     /* Symbols below are in shared memory, can update them now */
@@ -204,6 +203,7 @@ Configurable_MAC::Result Configurable_MAC::Impl::initialize()
     cmac_config_dyn = (struct cmac_config_dynamic *)CMAC_SYM_CONFIG_DYN;
     cmac_mbox_rx = (struct cmac_mbox *)CMAC_SYM_MBOX_RX;
     cmac_mbox_tx = (struct cmac_mbox *)CMAC_SYM_MBOX_TX;
+    memcpy(cmac_config->ble_bd_address, m_address.data(), m_address.size());
 
     /* Update CMAC configuration */
     cmac_config->lp_clock_freq = 0;
@@ -232,6 +232,13 @@ Configurable_MAC::Result Configurable_MAC::Impl::initialize()
     cmac_config->ble_dup_filter_found = true;
     cmac_config->use_high_performace_1m = true;
     cmac_config->use_high_performace_2m = true;
+
+    //debug("ble initialize\n");
+    //for (int i = 0; i < 6; i++)
+    //{
+    //    debug("%02X ", cmac_config->ble_bd_address[i]);
+    //}
+    //debug("\n");
 
     cmac_config_dyn->enable_sleep = true;
 
@@ -263,6 +270,7 @@ Configurable_MAC::Result Configurable_MAC::Impl::initialize()
     initialized = true;
     return Configurable_MAC::Result::success;
 }
+// __attribute__((optimize("O0")))
 Configurable_MAC::Result Configurable_MAC::Impl::set_address(gsl::span<uint8_t, 6> address)
 {
     Expects(!initialized);
@@ -271,7 +279,13 @@ Configurable_MAC::Result Configurable_MAC::Impl::set_address(gsl::span<uint8_t, 
         return Configurable_MAC::Result::initialized;
     }
     struct cmac_config *cmac_config = (struct cmac_config *)CMAC_SYM_CONFIG;
-    memcpy(cmac_config->ble_bd_address, address.data(), address.size());
+    //debug("set_address address\n");
+    //for (auto const value : address)
+    //{
+    //    debug("%02X ", value);
+    //}
+    //debug("\n");
+    copy(address.begin(), address.end(), m_address.begin());
     return Configurable_MAC::Result::success;
 }
 Configurable_MAC::Result Configurable_MAC::Impl::write(gsl::span<uint8_t const> data)

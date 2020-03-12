@@ -9700,7 +9700,8 @@
             "NVIC_RAM_VECTOR_ADDRESS=0x20000000",
             "NVIC_NUM_VECTORS=0x200/4",
             "dg_configIMAGE_SETUP=DEVELOPMENT_MODE",
-            "dg_configFLASH_MAX_WRITE_SIZE=256"
+            "dg_configFLASH_MAX_WRITE_SIZE=256",
+            "LV_CONF_INCLUDE_SIMPLE"
         ],
         "device_has": [
             "MPU",            

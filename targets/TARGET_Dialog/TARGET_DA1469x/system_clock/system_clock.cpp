@@ -280,7 +280,7 @@ void System_clock::Impl::set(System_clock::Clock clock)
         // pll 需要先开启32m
         enable_pll();
         wait_pll_lock();
-        // debug("pll ok\n");
+        debug("pll ok\n");
     }
 }
 void System_clock::Impl::low_power_clock_initialize()

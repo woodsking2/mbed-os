@@ -278,7 +278,7 @@ Configurable_MAC::Result Configurable_MAC::Impl::set_address(gsl::span<uint8_t, 
     {
         return Configurable_MAC::Result::initialized;
     }
-    struct cmac_config *cmac_config = (struct cmac_config *)CMAC_SYM_CONFIG;
+    // struct cmac_config *cmac_config = (struct cmac_config *)CMAC_SYM_CONFIG;
     //debug("set_address address\n");
     //for (auto const value : address)
     //{

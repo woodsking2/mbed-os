@@ -5,7 +5,7 @@ extern "C"
 }
 void hal_sleep()
 {
-    __WFI();
+     __WFI();
 }
 void hal_deepsleep()
 {
